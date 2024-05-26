@@ -1,0 +1,149 @@
+import {
+    IHttp,
+    IModify,
+    IRead,
+} from "@rocket.chat/apps-engine/definition/accessors";
+import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
+import {
+    ISlashCommand,
+    SlashCommandContext,
+} from "@rocket.chat/apps-engine/definition/slashcommands";
+import { IUser } from "@rocket.chat/apps-engine/definition/users";
+
+export class SummarizeCommand implements ISlashCommand {
+    public command = "ai-programmer";
+    public i18nParamsExample = "Automatically create short codes according to specification";
+    public i18nDescription = "";
+    public providesPreview = false;
+
+    public async executor(
+        context: SlashCommandContext,
+        read: IRead,
+        modify: IModify,
+        http: IHttp
+    ): Promise<void> {
+        const user = context.getSender();
+        const room = context.getRoom();
+        const threadId = context.getThreadId();
+
+        if (!threadId) {
+            await this.notifyMessage(
+                room,
+                read,
+                user,
+                "You can only call it in a thread"
+            );
+            throw new Error("You can only call in a thread");
+        }
+
+        const messages = await this.getThreadMessages(
+            room,
+            read,
+            user,
+            threadId
+        );
+
+        const summary = await this.summarizeMessages(
+            room,
+            read,
+            user,
+            http,
+            messages
+        );
+
+        await this.notifyMessage(room, read, user, summary, threadId);
+    }
+
+    private async summarizeMessages(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        http: IHttp,
+        messages: string
+    ): Promise<string> {
+        const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+        const MODEL = "gpt-3.5-turbo";
+        const OPENAI_API_KEY =
+            "";
+
+        const body = {
+            model: MODEL,
+            messages: [
+                {
+                    role: "system",
+                    content: `You are an assistant that helps Rocket.Chat users quickly write short code modules 
+                    in C/C++, Java, Javascript, Typescript or Python based on the specification supplied by the user, which are separated by double slashes (//): ${messages}`,
+                },
+            ],
+            temperature: 0,
+        };
+
+        const response = await http.post(OPENAI_URL, {
+            headers: {
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            content: JSON.stringify(body),
+        });
+
+        if (!response.content) {
+            await this.notifyMessage(
+                room,
+                read,
+                user,
+                "Something is wrong with AI. Please try again later"
+            );
+            throw new Error(
+                "Something is wrong with AI. Please try again later"
+            );
+        }
+
+        return JSON.parse(response.content).choices[0].message.content;
+    }
+
+    private async getThreadMessages(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        threadId: string
+    ) {
+        const threadReader = read.getThreadReader();
+        const thread = await threadReader.getThreadById(threadId);
+
+        if (!thread) {
+            await this.notifyMessage(room, read, user, "Thread not found");
+            throw new Error("Thread not found");
+        }
+
+        const messageTexts: string[] = [];
+        for (const message of thread) {
+            if (message.text) {
+                messageTexts.push(`${message.sender.name}: ${message.text}`);
+            }
+        }
+
+        // threadReader repeats the first message once, so here we remove it
+        messageTexts.shift();
+        return messageTexts.join(" // ");
+    }
+
+    private async notifyMessage(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        message: string,
+        threadId?: string
+    ): Promise<void> {
+        const notifier = read.getNotifier();
+
+        const messageBuilder = notifier.getMessageBuilder();
+        messageBuilder.setText(message);
+        messageBuilder.setRoom(room);
+
+        if (threadId) {
+            messageBuilder.setThreadId(threadId);
+        }
+
+        return notifier.notifyUser(user, messageBuilder.getMessage());
+    }
+}
