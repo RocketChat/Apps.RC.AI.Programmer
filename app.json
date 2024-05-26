@@ -1,0 +1,48 @@
+{
+    "id": "0034268f-e49a-4113-be51-4a5ca77aeeb8",
+    "version": "0.0.1",
+    "requiredApiVersion": "^1.19.0",
+    "iconFile": "icon2.png",
+    "author": {
+        "name": "Yuanlong Zhou",
+        "homepage": "ryanbowz@outlook.com",
+        "support": "ryanbowz@outlook.com"
+    },
+    "name": "AI programmer",
+    "nameSlug": "ai-programmer",
+    "classFile": "AiProgrammerApp.ts",
+    "description": "An AI assistant that automatically generates programming languages",
+    "implements": [],
+    "permissions": [
+        {
+            "name": "user.read"
+        },
+        {
+            "name": "user.write"
+        },
+        {
+            "name": "room.read"
+        },
+        {
+            "name": "room.write"
+        },
+        {
+            "name": "message.read"
+        },
+        {
+            "name": "message.write"
+        },
+        {
+            "name": "slashcommand"
+        },
+        {
+            "name": "api"
+        },
+        {
+            "name": "networking"
+        },
+        {
+            "name": "threads.read"
+        }
+    ]
+}
