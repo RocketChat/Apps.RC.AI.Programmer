@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/definition/roles/IRole.ts"],"names":[],"mappings":"","file":"IRole.js","sourcesContent":["export interface IRole {\n    description: string;\n    mandatory2fa?: boolean;\n    name: string;\n    protected: boolean;\n    scope: 'Users' | 'Subscriptions';\n    id: string;\n}\n"]}

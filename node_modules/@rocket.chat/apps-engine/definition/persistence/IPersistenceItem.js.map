@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/definition/persistence/IPersistenceItem.ts"],"names":[],"mappings":"","file":"IPersistenceItem.js","sourcesContent":["import type { RocketChatAssociationRecord } from '../metadata';\n\nexport interface IPersistenceItem {\n    appId: string;\n    data: Record<string, unknown>;\n    associations?: Array<RocketChatAssociationRecord>;\n}\n"]}
