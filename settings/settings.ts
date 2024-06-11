@@ -7,7 +7,7 @@ export const settings: ISetting[] = [
 	{
 		id: 'model',
 		i18nLabel: 'Model selection',
-		i18nDescription: 'AI model to use for summarization.',
+		i18nDescription: 'AI model to use for automatic code generation.',
 		type: SettingType.SELECT,
 		values: [
 			{ key: 'llama3-70b', i18nLabel: 'Llama3 70B' },
