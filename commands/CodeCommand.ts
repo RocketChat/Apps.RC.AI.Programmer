@@ -14,7 +14,7 @@ import { createTextCompletion } from '../helpers/createTextCompletion';
 import { createSummaryPrompt } from '../constants/CodePrompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
-export class SummarizeCommand implements ISlashCommand {
+export class CodeCommand implements ISlashCommand {
 	public command = 'ai-programmer';
 	public i18nParamsExample = 'Automatically create short codes according to specification';
 	public i18nDescription = '';
@@ -33,6 +33,7 @@ export class SummarizeCommand implements ISlashCommand {
 	): Promise<void> {
 		const user = context.getSender();
 		const room = context.getRoom();
+		
 		const threadId = context.getThreadId();
 
 		if (!threadId) {

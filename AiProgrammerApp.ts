@@ -5,10 +5,10 @@ import {
 } from '@rocket.chat/apps-engine/definition/accessors';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { SummarizeCommand } from './commands/SummarizeCommand';
+import { CodeCommand } from './commands/CodeCommand';
 import { settings } from './settings/settings';
 
-export class ThreadSummarizerApp extends App {
+export class AiProgrammerApp extends App {
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
 		super(info, logger, accessors);
 	}
@@ -19,7 +19,7 @@ export class ThreadSummarizerApp extends App {
 				configuration.settings.provideSetting(setting)
 			),
 			configuration.slashCommands.provideSlashCommand(
-				new SummarizeCommand(this)
+				new CodeCommand(this)
 			),
 		]);
 	}
