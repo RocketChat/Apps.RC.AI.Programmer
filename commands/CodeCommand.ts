@@ -11,7 +11,7 @@ import {
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { notifyMessage } from '../helpers/notifyMessage';
 import { createTextCompletion } from '../helpers/createTextCompletion';
-import { createSummaryPrompt } from '../constants/CodePrompts';
+import { generateCodePrompt } from '../constants/CodePrompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 export class CodeCommand implements ISlashCommand {
@@ -33,7 +33,7 @@ export class CodeCommand implements ISlashCommand {
 	): Promise<void> {
 		const user = context.getSender();
 		const room = context.getRoom();
-		
+
 		const threadId = context.getThreadId();
 
 		if (!threadId) {
@@ -48,7 +48,7 @@ export class CodeCommand implements ISlashCommand {
 
 		const messages = await this.getThreadMessages(room, read, user, threadId);
 
-		const prompt = createSummaryPrompt(messages);
+		const prompt = generateCodePrompt(messages);
 		const summary = await createTextCompletion(
 			this.app,
 			room,
