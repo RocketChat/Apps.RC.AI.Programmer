@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/icons": "^0.33.0",
-		"@rocket.chat/ui-kit": "^0.33.0"
+		"@rocket.chat/ui-kit": "^0.32.0-dev.370"
 	},
 	"scripts": {
 		"lint": "eslint . --fix --max-warnings=0",

@@ -1,7 +1,12 @@
 import {
-	IHttp,
-	IModify,
-	IRead,
+	IAppAccessors,
+    IConfigurationExtend,
+    IHttp,
+    ILogger,
+    IModify,
+    IPersistence,
+    IRead,
+	IUIKitSurfaceViewParam,
 } from '@rocket.chat/apps-engine/definition/accessors';
 import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import {
@@ -10,18 +15,33 @@ import {
 } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { notifyMessage } from '../helpers/notifyMessage';
-import { createTextCompletion } from '../helpers/createTextCompletion';
 import { generateCodePrompt } from '../constants/CodePrompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { CommandUtility } from "../helpers/commandUtility";
+import { BlockElementType, ISectionBlock, IUIKitResponse, UIKitBlockInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
+import {
+    ButtonStyle,
+    UIKitSurfaceType,
+} from "@rocket.chat/apps-engine/definition/uikit";
+import {
+    Block,
+    TextObjectType,
+    ContextBlock,
+    SectionBlock,
+} from "@rocket.chat/ui-kit";
+import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
+import { AiProgrammerApp } from '../AiProgrammerApp';
+
 
 export class CodeCommand implements ISlashCommand {
 	public command = 'ai-programmer';
 	public i18nParamsExample = 'Automatically create short codes according to specification';
 	public i18nDescription = '';
 	public providesPreview = false;
-	private readonly app: App;
+	private readonly app: AiProgrammerApp;
 
-	constructor(app: App) {
+	constructor(app: AiProgrammerApp) {
 		this.app = app;
 	}
 
@@ -29,62 +49,121 @@ export class CodeCommand implements ISlashCommand {
 		context: SlashCommandContext,
 		read: IRead,
 		modify: IModify,
-		http: IHttp
+		http: IHttp,
+		persistence: IPersistence
 	): Promise<void> {
 		const user = context.getSender();
 		const room = context.getRoom();
-
+		const command = context.getArguments();
 		const threadId = context.getThreadId();
+		const triggerId = context.getTriggerId();
 
-		if (!threadId) {
-			await notifyMessage(
-				room,
-				read,
-				user,
-				'You can only call /ai-programmer in a thread'
-			);
-			throw new Error('You can only call /ai-programmer in a thread');
-		}
+		// const contextualbarBlocks = createContextualBarBlocks(modify);
+		// await modify.getUiController().openContextualBarView(contextualbarBlocks, { triggerId }, user); 
 
-		const messages = await this.getThreadMessages(room, read, user, threadId);
+		// const contextualBar = await createMainContextualBar(
+        //     this.app,
+        //     user,
+        //     read,
+        //     persistence,
+        //     modify,
+        //     room
+        // );
 
-		const prompt = generateCodePrompt(messages);
-		const summary = await createTextCompletion(
-			this.app,
-			room,
-			read,
-			user,
-			http,
-			prompt,
-			threadId
-		);
+		// if (contextualBar instanceof Error) {
+        //     // Something went Wrong Propably SearchPageComponent Couldn't Fetch the Pages
+        //     this.app.getLogger().error(contextualBar.message);
+        //     return;
+        // }
+		// this.app.getLogger().debug("triggerid: "+triggerId);
+        // if (triggerId) {
+		// 	this.app.getLogger().debug("inside");
+        //     await modify.getUiController().openSurfaceView(
+        //         contextualBar,
+        //         {
+        //             triggerId,
+        //         },
+        //         user
+        //     );
+        // }
 
-		await notifyMessage(room, read, user, summary, threadId);
+		
+		const commandUtility = new CommandUtility(
+            {
+                sender: user,
+                room: room,
+                command: command,
+                context: context,
+                read: read,
+                modify: modify,
+                http: http,
+                persistence: persistence,
+				triggerId: triggerId,
+                app: this.app
+            }
+        );
+        commandUtility.resolveCommand();
+
 	}
 
-	private async getThreadMessages(
-		room: IRoom,
-		read: IRead,
-		user: IUser,
-		threadId: string
-	) {
-		const threadReader = read.getThreadReader();
-		const thread = await threadReader.getThreadById(threadId);
 
-		if (!thread) {
-			await notifyMessage(room, read, user, 'Thread not found');
-			throw new Error('Thread not found');
-		}
 
-		const messageTexts: string[] = [];
-		for (const message of thread) {
-			if (message.text) {
-				messageTexts.push(`${message.sender.name}: ${message.text}`);
-			}
-		}
-
-		// threadReader repeats the first message once, so here we remove it
-		messageTexts.shift();
-		return messageTexts.join('\n');
-	}
 }
+
+function createContextualBarBlocks(modify: IModify, viewId?: string): IUIKitContextualBarViewParam {
+    const blocks = modify.getCreator().getBlockBuilder();
+
+    const date = new Date().toISOString();
+
+    blocks.addSectionBlock({
+        text: blocks.newMarkdownTextObject(`The current date-time is\n${date}`), // [4]
+        accessory: { // [5]
+            type: BlockElementType.BUTTON,
+            actionId: 'date',
+            text: blocks.newPlainTextObject('Refresh'),
+            value: date,
+        },
+    });
+
+    return { // [6]
+        id: viewId || 'contextualbarId',
+        title: blocks.newPlainTextObject('Contextual Bar'),
+        submit: blocks.newButtonElement({
+            text: blocks.newPlainTextObject('Submit'),
+        }),
+        blocks: blocks.getBlocks(),
+    };
+}
+
+// export async function createMainContextualBar(
+// 	app: AiProgrammerApp,
+// 	user: IUser,
+// 	read: IRead,
+// 	persistence: IPersistence,
+// 	modify: IModify,
+// 	room: IRoom,
+// 	viewId?: string,
+// ): Promise<IUIKitSurfaceViewParam | Error> {
+// 	const { elementBuilder, blockBuilder } = app.getUtils();
+// 	const blocks: Block[] = [];
+// 	const divider = blockBuilder.createDividerBlock();
+// 	blocks.push(divider);
+
+// 	const close = elementBuilder.addButton(
+//         { text: "close", style: ButtonStyle.DANGER },
+//         {
+//             actionId: "1",
+//             blockId: "1",
+//         }
+//     );
+// 	return {
+//         id: viewId || 'contextualbarId',
+//         type: UIKitSurfaceType.CONTEXTUAL_BAR,
+//         title: {
+//             type: TextObjectType.MRKDWN,
+//             text: "Ai Programmer",
+//         },
+//         blocks,
+//         close,
+//     };
+// }
