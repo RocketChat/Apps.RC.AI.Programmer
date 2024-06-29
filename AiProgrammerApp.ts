@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/apps-engine/definition/accessors';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import { CodeCommand} from './commands/CodeCommand';
+import { CodeCommand } from './commands/CodeCommand';
 import { settings } from './settings/settings';
-import { BlockElementType, ISectionBlock, IUIKitResponse, UIKitActionButtonInteractionContext, UIKitBlockInteractionContext, UIKitViewCloseInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
+import { IUIKitResponse, UIKitActionButtonInteractionContext, UIKitBlockInteractionContext, UIKitViewCloseInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
 import { ElementBuilder } from "./lib/ElementBuilder";
 import { BlockBuilder } from "./lib/BlockBuilder";
 import { ExecuteActionButtonHandler } from './handlers/ExecuteActionButtonHandler';

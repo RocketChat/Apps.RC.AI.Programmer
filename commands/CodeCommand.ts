@@ -13,24 +13,7 @@ import {
 	ISlashCommand,
 	SlashCommandContext,
 } from '@rocket.chat/apps-engine/definition/slashcommands';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { notifyMessage } from '../helpers/notifyMessage';
-import { generateCodePrompt } from '../constants/CodePrompts';
-import { App } from '@rocket.chat/apps-engine/definition/App';
-import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { CommandUtility } from "../helpers/commandUtility";
-import { BlockElementType, ISectionBlock, IUIKitResponse, UIKitBlockInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
-import {
-    ButtonStyle,
-    UIKitSurfaceType,
-} from "@rocket.chat/apps-engine/definition/uikit";
-import {
-    Block,
-    TextObjectType,
-    ContextBlock,
-    SectionBlock,
-} from "@rocket.chat/ui-kit";
-import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 import { AiProgrammerApp } from '../AiProgrammerApp';
 
 
@@ -55,7 +38,6 @@ export class CodeCommand implements ISlashCommand {
 		const user = context.getSender();
 		const room = context.getRoom();
 		const command = context.getArguments();
-		const threadId = context.getThreadId();
 		const triggerId = context.getTriggerId();
 		
 		const commandUtility = new CommandUtility(
