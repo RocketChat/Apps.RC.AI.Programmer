@@ -57,36 +57,6 @@ export class CodeCommand implements ISlashCommand {
 		const command = context.getArguments();
 		const threadId = context.getThreadId();
 		const triggerId = context.getTriggerId();
-
-		// const contextualbarBlocks = createContextualBarBlocks(modify);
-		// await modify.getUiController().openContextualBarView(contextualbarBlocks, { triggerId }, user); 
-
-		// const contextualBar = await createMainContextualBar(
-        //     this.app,
-        //     user,
-        //     read,
-        //     persistence,
-        //     modify,
-        //     room
-        // );
-
-		// if (contextualBar instanceof Error) {
-        //     // Something went Wrong Propably SearchPageComponent Couldn't Fetch the Pages
-        //     this.app.getLogger().error(contextualBar.message);
-        //     return;
-        // }
-		// this.app.getLogger().debug("triggerid: "+triggerId);
-        // if (triggerId) {
-		// 	this.app.getLogger().debug("inside");
-        //     await modify.getUiController().openSurfaceView(
-        //         contextualBar,
-        //         {
-        //             triggerId,
-        //         },
-        //         user
-        //     );
-        // }
-
 		
 		const commandUtility = new CommandUtility(
             {
@@ -107,63 +77,5 @@ export class CodeCommand implements ISlashCommand {
 	}
 
 
-
 }
 
-function createContextualBarBlocks(modify: IModify, viewId?: string): IUIKitContextualBarViewParam {
-    const blocks = modify.getCreator().getBlockBuilder();
-
-    const date = new Date().toISOString();
-
-    blocks.addSectionBlock({
-        text: blocks.newMarkdownTextObject(`The current date-time is\n${date}`), // [4]
-        accessory: { // [5]
-            type: BlockElementType.BUTTON,
-            actionId: 'date',
-            text: blocks.newPlainTextObject('Refresh'),
-            value: date,
-        },
-    });
-
-    return { // [6]
-        id: viewId || 'contextualbarId',
-        title: blocks.newPlainTextObject('Contextual Bar'),
-        submit: blocks.newButtonElement({
-            text: blocks.newPlainTextObject('Submit'),
-        }),
-        blocks: blocks.getBlocks(),
-    };
-}
-
-// export async function createMainContextualBar(
-// 	app: AiProgrammerApp,
-// 	user: IUser,
-// 	read: IRead,
-// 	persistence: IPersistence,
-// 	modify: IModify,
-// 	room: IRoom,
-// 	viewId?: string,
-// ): Promise<IUIKitSurfaceViewParam | Error> {
-// 	const { elementBuilder, blockBuilder } = app.getUtils();
-// 	const blocks: Block[] = [];
-// 	const divider = blockBuilder.createDividerBlock();
-// 	blocks.push(divider);
-
-// 	const close = elementBuilder.addButton(
-//         { text: "close", style: ButtonStyle.DANGER },
-//         {
-//             actionId: "1",
-//             blockId: "1",
-//         }
-//     );
-// 	return {
-//         id: viewId || 'contextualbarId',
-//         type: UIKitSurfaceType.CONTEXTUAL_BAR,
-//         title: {
-//             type: TextObjectType.MRKDWN,
-//             text: "Ai Programmer",
-//         },
-//         blocks,
-//         close,
-//     };
-// }

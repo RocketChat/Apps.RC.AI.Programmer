@@ -15,6 +15,8 @@ import { App } from '@rocket.chat/apps-engine/definition/App';
 import { sendNotification } from "./message";
 import { AiProgrammerApp } from "../AiProgrammerApp";
 import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainContextualBar";
+import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import { Handler } from "../handlers/Handler";
 
 export class CommandUtility {
     sender: IUser;
@@ -29,6 +31,7 @@ export class CommandUtility {
     triggerId?: string;
     language: string;
     LLM: string;
+    
 
     constructor(props) {
         this.sender = props.sender;
@@ -51,35 +54,24 @@ export class CommandUtility {
             sender: this.sender,
             arguments: this.command,
         };
+        const handler = new Handler({
+            app: this.app,
+            read: this.read,
+            modify: this.modify,
+            persistence: this.persistence,
+            http: this.http,
+            sender: this.sender,
+            room: this.room,
+            triggerId: this.triggerId,
+        });
         if (this.command[0].includes("/")) {
             
         } else {
             switch (this.command[0]) {
-                // case SubcommandEnum.LOGIN: {
-                //     await handleLogin(
-                //         this.app,
-                //         this.read,
-                //         this.modify,
-                //         this.context,
-                //         this.room,
-                //         this.persistence
-                //     );
-                //     break;
-                // }
-                // case SubcommandEnum.LOGOUT: {
-                //     await handleLogout(
-                //         this.app,
-                //         this.read,
-                //         this.modify,
-                //         this.context,
-                //         this.room,
-                //         this.persistence,
-                //         this.sender,
-                //         this.http
-                //     );
-                //     break;
-                // }
                 case SubcommandEnum.TEST: {
+                    break;
+                }
+                case SubcommandEnum.UI: {
                     const contextualBar = await createMainContextualBar(
                         this.app,
                         this.sender,
@@ -90,15 +82,12 @@ export class CommandUtility {
                     );
             
                     if (contextualBar instanceof Error) {
-                        // Something went Wrong Propably SearchPageComponent Couldn't Fetch the Pages
                         this.app.getLogger().error(contextualBar.message);
                         return;
                     }
                     const triggerId = this.triggerId;
-                    this.app.getLogger().debug("In test, triggerid: "+triggerId);
                     if (triggerId) {
-                        this.app.getLogger().debug("inside");
-                        await this.modify.getUiController().openContextualBarView(
+                        await this.modify.getUiController().openSurfaceView(
                             contextualBar,
                             {
                                 triggerId,
@@ -108,66 +97,6 @@ export class CommandUtility {
                     }
                     break;
                 }
-                // case SubcommandEnum.SUBSCRIBE: {
-                //     ManageSubscriptions(
-                //         this.read,
-                //         this.context,
-                //         this.app,
-                //         this.persistence,
-                //         this.http,
-                //         this.room,
-                //         this.modify
-                //     );
-                //     break;
-                // }
-                // case SubcommandEnum.NEW_ISSUE: {
-                //     handleNewIssue(
-                //         this.read,
-                //         this.context,
-                //         this.app,
-                //         this.persistence,
-                //         this.http,
-                //         this.room,
-                //         this.modify
-                //     );
-                //     break;
-                // }
-                // case SubcommandEnum.SEARCH: {
-                //     handleSearch(
-                //         this.read,
-                //         this.context,
-                //         this.app,
-                //         this.persistence,
-                //         this.http,
-                //         this.room,
-                //         this.modify
-                //     );
-                //     break;
-                // }
-                // case SubcommandEnum.PROFILE: {
-                //     await handleUserProfileRequest(
-                //         this.read,
-                //         this.context,
-                //         this.app,
-                //         this.persistence,
-                //         this.http,
-                //         this.room,
-                //         this.modify
-                //     );
-                //     break;
-                // }
-                // case SubcommandEnum.ISSUES: {
-                //     handleIssues(
-                //         this.read,
-                //         this.context,
-                //         this.app,
-                //         this.persistence,
-                //         this.http,
-                //         this.room,
-                //         this.modify
-                //     )
-                //     break;
-                // }
                 default: {
                     await helperMessage({
                         room: this.room,
@@ -186,34 +115,21 @@ export class CommandUtility {
     private async handleDualParamCommands() {
         const query = this.command[1];
         const param = this.command[0];
-        if (param.startsWith('gen')){
-            const prompt = generateCodePrompt(query, this.language);
-            const result = await generateCode(
-                this.app,
-                this.room,
-                this.read,
-                this.sender,
-                this.http,
-                this.context,
-                this.persistence,
-                this.modify,
-                this.language,
-                this.LLM,
-                prompt
-            );
-            await sendNotification(
-                this.read,
-                this.modify,
-                this.sender,
-                this.room,
-                result
-            );
-        }
-        else if (param.startsWith('set')){
-            this.language = query;
+        const handler = new Handler({
+            app: this.app,
+            read: this.read,
+            modify: this.modify,
+            persistence: this.persistence,
+            http: this.http,
+            sender: this.sender,
+            room: this.room,
+            triggerId: this.triggerId,
+        });
+        if (param.startsWith('set')){
+            handler.setLanguage(query);
         }
         else if (param.startsWith('LLM')){
-            this.LLM = query;
+            handler.setLLM(query);
         }
     }
 
@@ -228,49 +144,103 @@ export class CommandUtility {
     }
 
     public async resolveCommand() {
-        switch (this.command.length) {
-            case 0: {
-                // handleMainModal(
-                //     this.read,
-                //     this.context,
-                //     this.persistence,
-                //     this.http,
-                //     this.room,
-                //     this.modify
-                // );
-                await helperMessage({
-                    room: this.room,
-                    read: this.read,
-                    persistence: this.persistence,
-                    modify: this.modify,
-                    http: this.http,
-                    user: this.sender
-                });
-                break;
-            }
-            case 1: {
-                this.handleSingularParamCommands();
-                break;
-            }
-            case 2: {
-                this.handleDualParamCommands();
-                break;
-            }
-            case 3: {
-                this.handleTriParamCommand();
-                break;
-            }
-            default: {
-                await helperMessage({
-                    room: this.room,
-                    read: this.read,
-                    persistence: this.persistence,
-                    modify: this.modify,
-                    http: this.http,
-                    user: this.sender
-                });
-                break;
+        if (this.command.length && this.command[0].startsWith('gen')) {
+            this.generateCodeFromParam();
+        } else {
+            switch (this.command.length) {
+                case 0: {
+                    await helperMessage({
+                        room: this.room,
+                        read: this.read,
+                        persistence: this.persistence,
+                        modify: this.modify,
+                        http: this.http,
+                        user: this.sender
+                    });
+                    break;
+                }
+                case 1: {
+                    this.handleSingularParamCommands();
+                    break;
+                }
+                case 2: {
+                    this.handleDualParamCommands();
+                    break;
+                }
+                case 3: {
+                    this.handleTriParamCommand();
+                    break;
+                }
+                default: {
+                    await helperMessage({
+                        room: this.room,
+                        read: this.read,
+                        persistence: this.persistence,
+                        modify: this.modify,
+                        http: this.http,
+                        user: this.sender
+                    });
+                    break;
+                }
             }
         }
+    }
+
+    private async generateCodeFromParam(){
+        
+        let query = '';
+        this.app.getLogger().debug("before use language: "+this.language+", llm:"+this.LLM);
+        console.log("before use language: "+this.language+", llm:"+this.LLM);
+        for(let i = 1; i < this.command.length; i++) {
+            query += this.command[i];
+        }
+        try{
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'language');
+            const persis = this.read.getPersistenceReader();
+            const record = await persis.readByAssociation(association);
+            if (record != undefined) {
+                this.language = record[0]['language'] as string;
+            }
+            else {
+                console.log("Read language Fail!");
+                this.language = 'Python';
+            }
+            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'LLM');
+            const LLMrecord = await persis.readByAssociation(LLMassociation);
+            if (LLMrecord != undefined) {
+                this.LLM = LLMrecord[0]['LLM'] as string;
+            }
+            else {
+                console.log("Read LLM Fail!");
+                this.LLM = 'mistral-7b';
+            }
+        }
+        catch (err) {
+            console.log("Error in Gen: "+err);
+            return this.app.getLogger().error(err);
+        }
+        this.app.getLogger().debug("use language: "+this.language+", llm:"+this.LLM);
+        console.log("success use language: "+this.language+", llm:"+this.LLM);
+        const prompt = generateCodePrompt(query, this.language);
+        const result = await generateCode(
+            this.app,
+            this.room,
+            this.read,
+            this.sender,
+            this.http,
+            this.context,
+            this.persistence,
+            this.modify,
+            this.language,
+            this.LLM,
+            prompt
+        );
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            result
+        );
     }
 }

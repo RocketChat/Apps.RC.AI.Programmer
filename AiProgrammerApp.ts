@@ -11,9 +11,13 @@ import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { CodeCommand} from './commands/CodeCommand';
 import { settings } from './settings/settings';
-import { BlockElementType, ISectionBlock, IUIKitResponse, UIKitBlockInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
+import { BlockElementType, ISectionBlock, IUIKitResponse, UIKitActionButtonInteractionContext, UIKitBlockInteractionContext, UIKitViewCloseInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
 import { ElementBuilder } from "./lib/ElementBuilder";
 import { BlockBuilder } from "./lib/BlockBuilder";
+import { ExecuteActionButtonHandler } from './handlers/ExecuteActionButtonHandler';
+import { ExecuteBlockActionHandler } from './handlers/ExecuteBlockActionHandler';
+import { ExecuteViewClosedHandler } from './handlers/ExecuteViewClosedHandler';
+import { ExecuteViewSubmitHandler } from './handlers/ExecuteViewSubmitHandler';
 
 export class AiProgrammerApp extends App {
 	private elementBuilder: ElementBuilder;
@@ -43,31 +47,79 @@ export class AiProgrammerApp extends App {
         };
     }
 
-	// public async executeBlockActionHandler(context: UIKitBlockInteractionContext, _read: IRead, _http: IHttp, _persistence: IPersistence, modify: IModify) {
-    //     const data = context.getInteractionData();
+	public async executeBlockActionHandler(
+        context: UIKitBlockInteractionContext,
+        read: IRead,
+        http: IHttp,
+        persistence: IPersistence,
+        modify: IModify
+    ): Promise<IUIKitResponse> {
+        const handler = new ExecuteBlockActionHandler(
+            this,
+            read,
+            http,
+            persistence,
+            modify,
+            context
+        );
 
-    //     const contextualbarBlocks = createContextualBarBlocks(modify, data.container.id);
+        return await handler.handleActions();
+    }
 
-    //     // [9]
-    //     await modify.getUiController().updateContextualBarView(contextualbarBlocks, { triggerId: data.triggerId }, data.user);
+    public async executeViewSubmitHandler(
+        context: UIKitViewSubmitInteractionContext,
+        read: IRead,
+        http: IHttp,
+        persistence: IPersistence,
+        modify: IModify
+    ): Promise<IUIKitResponse> {
+        const handler = new ExecuteViewSubmitHandler(
+            this,
+            read,
+            http,
+            persistence,
+            modify,
+            context
+        );
 
-    //     return {
-    //         success: true,
-    //     };
-    // }
+        return await handler.handleActions();
+    }
 
-    // // [10]
-    // public async executeViewSubmitHandler(context: UIKitViewSubmitInteractionContext): Promise<IUIKitResponse> {
-    //     const data = context.getInteractionData()
+    public async executeViewClosedHandler(
+        context: UIKitViewCloseInteractionContext,
+        read: IRead,
+        http: IHttp,
+        persistence: IPersistence,
+        modify: IModify
+    ): Promise<IUIKitResponse> {
+        const handler = new ExecuteViewClosedHandler(
+            this,
+            read,
+            http,
+            persistence,
+            modify,
+            context
+        );
 
-    //     // [11]
-    //     const text = (data.view.blocks[0] as ISectionBlock).text.text;
+        return await handler.handleActions();
+    }
 
-    //     // [12]
-    //     console.log(text);
+	public async executeActionButtonHandler(
+        context: UIKitActionButtonInteractionContext,
+        read: IRead,
+        http: IHttp,
+        persistence: IPersistence,
+        modify: IModify
+    ): Promise<IUIKitResponse> {
+        const handler = new ExecuteActionButtonHandler(
+            this,
+            read,
+            http,
+            persistence,
+            modify,
+            context
+        );
 
-    //     return {
-    //         success: true,
-    //     };
-    // }
+        return await handler.handleActions();
+    }
 }

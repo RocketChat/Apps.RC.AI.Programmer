@@ -5,11 +5,11 @@ export enum SubcommandEnum {
     SUBSCRIBE = 'subscribe',
     UNSUBSCRIBE = 'unsubscribe',
     TEST = 'test',
+    UI = 'ui',
     SEARCH = 'search',
     NEW_ISSUE = 'issue',
     ISSUES = 'issues',
     PROFILE = 'me',
-    REMIND = 'remind',
     CREATE= 'create',
     LIST ='list',
 }

@@ -43,6 +43,18 @@
         },
         {
             "name": "threads.read"
+        },
+        {
+            "name": "ui.registerButtons"
+        },
+        {
+            "name": "server-setting.read"
+        },
+        {
+            "name": "persistence"
+        },
+        {
+            "name": "ui.interact"
         }
     ]
 }
