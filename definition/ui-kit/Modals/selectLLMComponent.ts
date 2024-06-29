@@ -40,6 +40,8 @@ export async function selectLLMComponent(
     const LLMModels = [
         { key: 'llama3-70b', i18nLabel: 'Llama3 70B' },
 		{ key: 'mistral-7b', i18nLabel: 'Mistral 7B' },
+        { key: 'codellama-13b', i18nLabel: 'CodeLlama-13b' },
+        { key: 'codestral-22b', i18nLabel: 'Codestral-22b' },
     ];
     const options = LLMModels.map((LLM) => {
         const text = LLM.i18nLabel;

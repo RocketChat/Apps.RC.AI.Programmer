@@ -50,7 +50,7 @@ export async function generateCode(
             modify,
             user,
             room,
-            "Something is wrong with AI. Please try again later"
+            "Something is wrong with AI. Please try again later! "
         );
 		throw new Error('Something is wrong with AI. Please try again later');
 	}

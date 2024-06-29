@@ -127,9 +127,23 @@ export class CommandUtility {
         });
         if (param.startsWith('set')){
             handler.setLanguage(query);
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                "You have successfully set programming language to: " + query
+            );
         }
         else if (param.startsWith('LLM')){
             handler.setLLM(query);
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                "You have successfully switched LLM to: " + query
+            );
         }
     }
 
