@@ -97,6 +97,23 @@ export class CommandUtility {
                     }
                     break;
                 }
+                case SubcommandEnum.LIST: {
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        this.sender,
+                        this.room,
+                        ` 
+                        *According to the regulation fo RC community, you can choose from the following LLMs:*
+    1. Mistral_7b
+    2. Llama3_8b
+    3. codellama-13b
+    4. codestral-22b
+    5. Your own models will be supported soon.
+    `
+                    );
+                    break;
+                }
                 default: {
                     await helperMessage({
                         room: this.room,
