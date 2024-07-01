@@ -104,12 +104,13 @@ export class CommandUtility {
                         this.sender,
                         this.room,
                         ` 
-                        *According to the regulation fo RC community, you can choose from the following LLMs:*
-    1. Mistral_7b
-    2. Llama3_8b
-    3. codellama-13b
-    4. codestral-22b
-    5. Your own models will be supported soon.
+                        * According to the regulation fo RC community, you can choose from the following LLMs: *
+1. mistral-7b
+2. llama3-70b
+3. codellama-7b
+4. codestral-22b
+5. Your own models will be supported soon.
+Please use the direct name of LLM as above in the command \`/ai-programmer llm xxx\` to switch to that LLM.
     `
                     );
                     break;
