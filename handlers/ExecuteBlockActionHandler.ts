@@ -13,6 +13,8 @@ import { IMessage } from "@rocket.chat/apps-engine/definition/messages";
 import { Modals } from "../enum/Modals";
 import { Handler } from "./Handler";
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import { regenerateCodePrompt } from '../constants/CodePrompts';
+import { generateCode } from '../helpers/generateCode';
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -74,6 +76,26 @@ export class ExecuteBlockActionHandler {
                     await this.persistence.updateByAssociation(association, { LLM: value }, true);
                 }
                 break;
+            }
+            case Modals.COMMENT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                    await this.persistence.updateByAssociation(association, { regen_input: value }, true);
+                }
+                break;
+            }
+            case Modals.REGEN_ACTION: {
+                const persis = this.read.getPersistenceReader();
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+                const result_record = await persis.readByAssociation(association);
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                const regen_record = await persis.readByAssociation(association_input);
+                if (result_record && regen_record) {
+                    handler.regenerateCodeFromResult(result_record[0]['result'], regen_record[0]['regen_input']);
+                } else {
+                    this.app.getLogger().debug("error: no result/regen command");
+                }
+                
             }
         }
 

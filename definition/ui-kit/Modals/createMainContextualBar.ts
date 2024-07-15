@@ -27,6 +27,7 @@ import { ButtonInSectionComponent } from "./buttonInSectionComponent";
 import { selectLanguageComponent} from "./selectLanguageComponent";
 import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
+import { inputElementComponent } from "./common/inputElementComponent";
 
 export async function createMainContextualBar(
 	app: AiProgrammerApp,
@@ -64,10 +65,39 @@ export async function createMainContextualBar(
                 blockId: Modals.CONFIGURE_BLOCK,
             }
         );
+        const regenerateButton = ButtonInSectionComponent(
+            {
+                app,
+                buttonText: "Regenerate",
+                style: ButtonStyle.PRIMARY,
+            },
+            {
+                actionId: Modals.REGEN_ACTION,
+                blockId: Modals.REGEN_BLOCK,
+            }
+        );
+        const regenerateInput = inputElementComponent(
+            {
+                app,
+                placeholder: "Please help me refine the code to make it...",
+                label: "Not satisfied with code result? Refine it with:",
+                optional: false,
+                multiline: true,
+                dispatchActionConfigOnInput: true,
+                initialValue: '',
+            },
+            {
+                actionId: Modals.COMMENT_INPUT_ACTION,
+                blockId: Modals.COMMENT_INPUT_BLOCK,
+            }
+        );
+    
         blocks.push(LanguageComponent);
         blocks.push(LLMComponent);
         blocks.push(startButton);
         blocks.push(divider);
+        blocks.push(regenerateInput);
+        blocks.push(regenerateButton);
     }
     catch (err) {
         console.log("Error in Gen: "+err);

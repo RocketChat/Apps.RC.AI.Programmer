@@ -109,7 +109,6 @@ export class CommandUtility {
 2. llama3-70b
 3. codellama-7b
 4. codestral-22b
-5. Your own models will be supported soon.
 Please use the direct name of LLM as above in the command \`/ai-programmer llm xxx\` to switch to that LLM.
     `
                     );
@@ -176,8 +175,23 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
     }
 
     public async resolveCommand() {
+        const handler = new Handler({
+            app: this.app,
+            read: this.read,
+            modify: this.modify,
+            persistence: this.persistence,
+            http: this.http,
+            sender: this.sender,
+            room: this.room,
+            triggerId: this.triggerId,
+        });
         if (this.command.length && this.command[0].startsWith('gen')) {
-            this.generateCodeFromParam();
+            let query = '';
+            for(let i = 1; i < this.command.length; i++) {
+                query += this.command[i];
+                query += ' ';
+            }
+            handler.generateCodeFromParam(query);
         } else {
             switch (this.command.length) {
                 case 0: {
@@ -218,61 +232,4 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
         }
     }
 
-    private async generateCodeFromParam(){
-        
-        let query = '';
-        this.app.getLogger().debug("before use language: "+this.language+", llm:"+this.LLM);
-        console.log("before use language: "+this.language+", llm:"+this.LLM);
-        for(let i = 1; i < this.command.length; i++) {
-            query += this.command[i];
-        }
-        try{
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'language');
-            const persis = this.read.getPersistenceReader();
-            const record = await persis.readByAssociation(association);
-            if (record != undefined) {
-                this.language = record[0]['language'] as string;
-            }
-            else {
-                console.log("Read language Fail!");
-                this.language = 'Python';
-            }
-            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'LLM');
-            const LLMrecord = await persis.readByAssociation(LLMassociation);
-            if (LLMrecord != undefined) {
-                this.LLM = LLMrecord[0]['LLM'] as string;
-            }
-            else {
-                console.log("Read LLM Fail!");
-                this.LLM = 'mistral-7b';
-            }
-        }
-        catch (err) {
-            console.log("Error in Gen: "+err);
-            return this.app.getLogger().error(err);
-        }
-        this.app.getLogger().debug("use language: "+this.language+", llm:"+this.LLM);
-        console.log("success use language: "+this.language+", llm:"+this.LLM);
-        const prompt = generateCodePrompt(query, this.language);
-        const result = await generateCode(
-            this.app,
-            this.room,
-            this.read,
-            this.sender,
-            this.http,
-            this.context,
-            this.persistence,
-            this.modify,
-            this.language,
-            this.LLM,
-            prompt
-        );
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            result
-        );
-    }
 }

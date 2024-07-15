@@ -12,7 +12,6 @@ export async function generateCode(
 	read: IRead,
 	user: IUser,
 	http: IHttp,
-    context: SlashCommandContext,
     persistence: IPersistence,
     modify: IModify,
     language: string,
