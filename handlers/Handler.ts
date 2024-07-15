@@ -11,6 +11,7 @@ import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } fro
 import { generateCode } from '../helpers/generateCode';
 import { regenerateCodePrompt, generateCodePrompt } from '../constants/CodePrompts';
 import { sendNotification } from "../helpers/message";
+import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
 
 export class Handler {
     public app: AiProgrammerApp;
@@ -110,17 +111,30 @@ export class Handler {
         );
         const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
         await this.persistence.updateByAssociation(association, { result: result }, true);
+        const regen_block = await regenerationComponent(this.app,
+            this.sender,
+            this.read,
+            this.persistence,
+            this.modify,
+            this.room);
         await sendNotification(
             this.read,
             this.modify,
             this.sender,
             this.room,
-            result
+            result,
+        );
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            undefined,
+            regen_block,
         );
     }
 
-    public async generateCodeFromParam(query: string){
-        
+    public async generateCodeFromParam(query: string){  
         const persis = this.read.getPersistenceReader();
         try{
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'language');
@@ -163,12 +177,26 @@ export class Handler {
         );
         const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
         await this.persistence.updateByAssociation(association, { result: result }, true);
+        const regen_block = await regenerationComponent(this.app,
+            this.sender,
+            this.read,
+            this.persistence,
+            this.modify,
+            this.room);
         await sendNotification(
             this.read,
             this.modify,
             this.sender,
             this.room,
-            result
+            result,
+        );
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            undefined,
+            regen_block,
         );
     }
 }

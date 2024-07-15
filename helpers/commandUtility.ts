@@ -195,14 +195,29 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
         } else {
             switch (this.command.length) {
                 case 0: {
-                    await helperMessage({
-                        room: this.room,
-                        read: this.read,
-                        persistence: this.persistence,
-                        modify: this.modify,
-                        http: this.http,
-                        user: this.sender
-                    });
+                    const contextualBar = await createMainContextualBar(
+                        this.app,
+                        this.sender,
+                        this.read,
+                        this.persistence,
+                        this.modify,
+                        this.room
+                    );
+            
+                    if (contextualBar instanceof Error) {
+                        this.app.getLogger().error(contextualBar.message);
+                        return;
+                    }
+                    const triggerId = this.triggerId;
+                    if (triggerId) {
+                        await this.modify.getUiController().openSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            this.sender
+                        );
+                    }
                     break;
                 }
                 case 1: {

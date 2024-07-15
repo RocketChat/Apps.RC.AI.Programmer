@@ -18,6 +18,10 @@ export enum Modals {
     CONFIGURE_ACTION = "configure-action",
     REGEN_BLOCK = "regenerate-block",
     REGEN_ACTION = "regenerate-action",
+    GEN_BLOCK = "generate-block",
+    GEN_ACTION = "generate-action",
+    GEN_INPUT_BLOCK = "generate-input-block",
+    GEN_INPUT_ACTION = "generate-input-action",
     MAIN_CLOSE_BLOCK = "main-close-block",
     MAIN_CLOSE_ACTION = "main-close-action",
     SELECT_LLM_BLOCK = "select-llm-block",
@@ -26,4 +30,6 @@ export enum Modals {
     SELECT_LAN_ACTION = "select-lan-action",
     COMMENT_INPUT_BLOCK = "comment-input-block",
     COMMENT_INPUT_ACTION = "comment-input-action",
+    REGEN_BUTTON_BLOCK = "regen-button-block",
+    REGEN_BUTTON_ACTION = "regen-button-action",
 }
