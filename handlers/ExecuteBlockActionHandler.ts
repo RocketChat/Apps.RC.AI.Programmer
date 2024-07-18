@@ -19,8 +19,6 @@ import { createRegenerationContextualBar } from "../definition/ui-kit/Modals/cre
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
-    // private select_lang: string;
-    // private select_llm: string;
     constructor(
         protected readonly app: AiProgrammerApp,
         protected readonly read: IRead,
@@ -136,6 +134,13 @@ export class ExecuteBlockActionHandler {
                 
                 if (triggerId) {
                     await this.modify.getUiController().openSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        user
+                    );
+                    await this.modify.getUiController().updateSurfaceView(
                         contextualBar,
                         {
                             triggerId,

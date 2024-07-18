@@ -41,30 +41,6 @@ export async function createRegenerationContextualBar(
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
     try{
-        const LanguageComponent = await selectLanguageComponent(app,
-            user,
-            read,
-            persistence,
-            modify,
-            room);
-        const LLMComponent = await selectLLMComponent(app,
-            user,
-            read,
-            persistence,
-            modify,
-            room);
-        const divider = blockBuilder.createDividerBlock();
-        const startButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Configure",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.CONFIGURE_ACTION,
-                blockId: Modals.CONFIGURE_BLOCK,
-            }
-        );
         const regenerateButton = ButtonInSectionComponent(
             {
                 app,
@@ -92,10 +68,6 @@ export async function createRegenerationContextualBar(
             }
         );
     
-        // blocks.push(LanguageComponent);
-        // blocks.push(LLMComponent);
-        // blocks.push(startButton);
-        // blocks.push(divider);
         blocks.push(regenerateInput);
         blocks.push(regenerateButton);
     }

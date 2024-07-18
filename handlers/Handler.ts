@@ -93,10 +93,15 @@ export class Handler {
             console.log("Error in Gen: "+err);
             return this.app.getLogger().error(err);
         }
-        
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
+            (Please note that if you set language or LLM inproperly, you will not get any response!)`
+        );
         const prompt = regenerateCodePrompt(dialogue, last_result);
-        this.app.getLogger().debug("regen prompt: " + prompt);
-        console.log("regen prompt: " + prompt);
         const result = await generateCode(
             this.app,
             this.room,
@@ -109,29 +114,39 @@ export class Handler {
             this.LLM,
             prompt
         );
-        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
-        await this.persistence.updateByAssociation(association, { result: result }, true);
-        const regen_block = await regenerationComponent(this.app,
-            this.sender,
-            this.read,
-            this.persistence,
-            this.modify,
-            this.room);
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            result,
-        );
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            undefined,
-            regen_block,
-        );
+        if (!result) {
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                `Something is wrong with the AI programmer bot, please check your settings to ensure correct language and LLM are configured!`
+            );
+        } else {
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+            await this.persistence.updateByAssociation(association, { result: result }, true);
+            const regen_block = await regenerationComponent(this.app,
+                this.sender,
+                this.read,
+                this.persistence,
+                this.modify,
+                this.room);
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                result,
+            );
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                undefined,
+                regen_block,
+            );
+        }
     }
 
     public async generateCodeFromParam(query: string){  
@@ -160,8 +175,16 @@ export class Handler {
             console.log("Error in Gen: "+err);
             return this.app.getLogger().error(err);
         }
-        this.app.getLogger().debug("use language: "+this.language+", llm:"+this.LLM);
-        console.log("success use language: "+this.language+", llm:"+this.LLM);
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
+            (Please note that if you set language or LLM inproperly, you will not get any response!)`
+        );
+        // this.app.getLogger().debug("use language: "+this.language+", llm:"+this.LLM);
+        // console.log("success use language: "+this.language+", llm:"+this.LLM);
         const prompt = generateCodePrompt(query, this.language);
         const result = await generateCode(
             this.app,
@@ -175,28 +198,38 @@ export class Handler {
             this.LLM,
             prompt
         );
-        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
-        await this.persistence.updateByAssociation(association, { result: result }, true);
-        const regen_block = await regenerationComponent(this.app,
-            this.sender,
-            this.read,
-            this.persistence,
-            this.modify,
-            this.room);
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            result,
-        );
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            undefined,
-            regen_block,
-        );
+        if (!result) {
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                `Something is wrong with the AI programmer bot, please check your settings to ensure correct language and LLM are configured!`
+            );
+        } else {
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+            await this.persistence.updateByAssociation(association, { result: result }, true);
+            const regen_block = await regenerationComponent(this.app,
+                this.sender,
+                this.read,
+                this.persistence,
+                this.modify,
+                this.room);
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                result,
+            );
+            await sendNotification(
+                this.read,
+                this.modify,
+                this.sender,
+                this.room,
+                undefined,
+                regen_block,
+            );
+        }
     }
 }

@@ -94,6 +94,13 @@ export class CommandUtility {
                             },
                             this.sender
                         );
+                        await this.modify.getUiController().updateSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            this.sender
+                        );
                     }
                     break;
                 }
@@ -211,6 +218,13 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
                     const triggerId = this.triggerId;
                     if (triggerId) {
                         await this.modify.getUiController().openSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            this.sender
+                        );
+                        await this.modify.getUiController().updateSurfaceView(
                             contextualBar,
                             {
                                 triggerId,
