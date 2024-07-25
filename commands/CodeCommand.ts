@@ -50,7 +50,7 @@ export class CodeCommand implements ISlashCommand {
                 modify: modify,
                 http: http,
                 persistence: persistence,
-				triggerId: triggerId,
+                triggerId: triggerId,
                 app: this.app
             }
         );

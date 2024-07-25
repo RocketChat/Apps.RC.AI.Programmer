@@ -3,6 +3,7 @@ import { IRoom, RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { BlockBuilder, IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { NotificationsController } from './notifications';
+import { Block } from "@rocket.chat/ui-kit";
 
 export async function getDirect(read: IRead, modify: IModify, appUser: IUser, username: string): Promise <IRoom | undefined > {
     const usernames = [appUser.username, username];
@@ -58,15 +59,17 @@ export async function shouldSendMessage(read: IRead, persistence: IPersistence, 
     return notificationStatus ? notificationStatus.status : true;
 }
 
-export async function sendNotification(read: IRead, modify: IModify, user: IUser, room: IRoom, message: string, blocks?: BlockBuilder): Promise<void> {
+export async function sendNotification(read: IRead, modify: IModify, user: IUser, room: IRoom, message?: string, blocks?: Array<Block>): Promise<void> {
     const appUser = await read.getUserReader().getAppUser() as IUser;
 
     const msg = modify.getCreator().startMessage()
         .setSender(appUser)
         .setRoom(room)
-        .setText(message);
+        .setGroupable(false);
 
-    if (blocks) {
+    if (message) {
+        msg.setText(message);
+    } else if (blocks) {
         msg.setBlocks(blocks);
     }
 

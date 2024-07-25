@@ -12,7 +12,6 @@ export async function generateCode(
 	read: IRead,
 	user: IUser,
 	http: IHttp,
-    context: SlashCommandContext,
     persistence: IPersistence,
     modify: IModify,
     language: string,
@@ -23,7 +22,6 @@ export async function generateCode(
 		.getAccessors()
 		.environmentReader.getSettings()
 		.getValueById('model');
-	//const url = `http://${model}/v1`;
 	const url = `http://${LLM}/v1`;
 
 	const body = {
@@ -46,11 +44,11 @@ export async function generateCode(
 
 	if (!response.content) {
 		await sendNotification(
-            read,
-            modify,
-            user,
-            room,
-            "Something is wrong with AI. Please try again later! "
+			read,
+			modify,
+			user,
+			room,
+			"Something is wrong with AI. Please try again later! "
         );
 		throw new Error('Something is wrong with AI. Please try again later');
 	}

@@ -29,7 +29,7 @@ import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 
-export async function createMainContextualBar(
+export async function createRegenerationContextualBar(
 	app: AiProgrammerApp,
 	user: IUser,
 	read: IRead,
@@ -41,63 +41,35 @@ export async function createMainContextualBar(
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
     try{
-        const LanguageComponent = await selectLanguageComponent(app,
-            user,
-            read,
-            persistence,
-            modify,
-            room);
-        const LLMComponent = await selectLLMComponent(app,
-            user,
-            read,
-            persistence,
-            modify,
-            room);
-        const divider = blockBuilder.createDividerBlock();
-        const startButton = ButtonInSectionComponent(
+        const regenerateButton = ButtonInSectionComponent(
             {
                 app,
-                buttonText: "Configure",
+                buttonText: "Regenerate",
                 style: ButtonStyle.PRIMARY,
             },
             {
-                actionId: Modals.CONFIGURE_ACTION,
-                blockId: Modals.CONFIGURE_BLOCK,
+                actionId: Modals.REGEN_ACTION,
+                blockId: Modals.REGEN_BLOCK,
             }
         );
-        const generateButton = ButtonInSectionComponent(
+        const regenerateInput = inputElementComponent(
             {
                 app,
-                buttonText: "Generate",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
-            }
-        );
-        const generateInput = inputElementComponent(
-            {
-                app,
-                placeholder: "Please help me generate a binary search tree ...",
-                label: "Write the description for the code you want to generate:",
+                placeholder: "Please help me refine the code to make it...",
+                label: "Not satisfied with code result? Refine it with:",
                 optional: false,
                 multiline: true,
                 dispatchActionConfigOnInput: true,
                 initialValue: '',
             },
             {
-                actionId: Modals.GEN_INPUT_ACTION,
-                blockId: Modals.GEN_INPUT_BLOCK,
+                actionId: Modals.COMMENT_INPUT_ACTION,
+                blockId: Modals.COMMENT_INPUT_BLOCK,
             }
         );
     
-        blocks.push(LanguageComponent);
-        blocks.push(LLMComponent);
-        blocks.push(startButton);
-        blocks.push(divider);
-        blocks.push(generateInput);
-        blocks.push(generateButton);
+        blocks.push(regenerateInput);
+        blocks.push(regenerateButton);
     }
     catch (err) {
         console.log("Error in Gen: "+err);

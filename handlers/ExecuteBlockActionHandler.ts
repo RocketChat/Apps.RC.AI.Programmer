@@ -13,11 +13,12 @@ import { IMessage } from "@rocket.chat/apps-engine/definition/messages";
 import { Modals } from "../enum/Modals";
 import { Handler } from "./Handler";
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import { regenerateCodePrompt } from '../constants/CodePrompts';
+import { generateCode } from '../helpers/generateCode';
+import { createRegenerationContextualBar } from "../definition/ui-kit/Modals/createRegenerationContextualBar";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
-    // private select_lang: string;
-    // private select_llm: string;
     constructor(
         protected readonly app: AiProgrammerApp,
         protected readonly read: IRead,
@@ -58,7 +59,6 @@ export class ExecuteBlockActionHandler {
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
-                console.log("pressed close2");
                 break;
             }
             case Modals.SELECT_LAN_ACTION: {
@@ -72,6 +72,81 @@ export class ExecuteBlockActionHandler {
                 if (value) {
                     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_llm`);
                     await this.persistence.updateByAssociation(association, { LLM: value }, true);
+                }
+                break;
+            }
+            case Modals.COMMENT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                    await this.persistence.updateByAssociation(association, { regen_input: value }, true);
+                }
+                break;
+            }
+            case Modals.GEN_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `gen_input`);
+                    await this.persistence.updateByAssociation(association, { gen_input: value }, true);
+                }
+                break;
+            }
+            case Modals.GEN_ACTION: {
+                const persis = this.read.getPersistenceReader();
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `gen_input`);
+                const gen_record = await persis.readByAssociation(association_input);
+                if (gen_record) {
+                    handler.generateCodeFromParam(gen_record[0]['gen_input'] as string);
+                } else {
+                    this.app.getLogger().debug("error: no gen command");
+                }
+                break;
+            }
+            case Modals.REGEN_ACTION: {
+                const persis = this.read.getPersistenceReader();
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+                const result_record = await persis.readByAssociation(association);
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                const regen_record = await persis.readByAssociation(association_input);
+                if (result_record && regen_record) {
+                    handler.regenerateCodeFromResult(result_record[0]['result'], regen_record[0]['regen_input']);
+                } else {
+                    this.app.getLogger().debug("error: no result/regen command");
+                }
+                break;
+            }
+            case Modals.REGEN_BUTTON_ACTION: {
+                if (!room) {
+                    this.app.getLogger().error("Room is not specified!");
+                    break;
+                }
+                const contextualBar = await createRegenerationContextualBar(
+                    this.app,
+                    user,
+                    this.read,
+                    this.persistence,
+                    this.modify,
+                    room
+                );
+        
+                if (contextualBar instanceof Error) {
+                    this.app.getLogger().error(contextualBar.message);
+                    break;
+                }
+                
+                if (triggerId) {
+                    await this.modify.getUiController().openSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        user
+                    );
+                    await this.modify.getUiController().updateSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        user
+                    );
                 }
                 break;
             }
