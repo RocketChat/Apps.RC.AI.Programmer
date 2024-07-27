@@ -17,6 +17,7 @@ import { AiProgrammerApp } from "../AiProgrammerApp";
 import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainContextualBar";
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { Handler } from "../handlers/Handler";
+import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
 
 export class CommandUtility {
     sender: IUser;
@@ -105,6 +106,7 @@ export class CommandUtility {
                     break;
                 }
                 case SubcommandEnum.LIST: {
+                    console.log("Room Number: "+this.room.id);
                     await sendNotification(
                         this.read,
                         this.modify,
@@ -118,6 +120,23 @@ export class CommandUtility {
 4. codestral-22b
 Please use the direct name of LLM as above in the command \`/ai-programmer llm xxx\` to switch to that LLM.
     `
+                    );
+                    break;
+                }
+                case SubcommandEnum.REGEN: {
+                    const regen_block = await regenerationComponent(this.app,
+                        this.sender,
+                        this.read,
+                        this.persistence,
+                        this.modify,
+                        this.room);
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        this.sender,
+                        this.room,
+                        undefined,
+                        regen_block,
                     );
                     break;
                 }

@@ -29,7 +29,8 @@ export async function helperMessage({
     3. Switch to the LLM you want to use to generate code -> \`/ai-programmer llm llama3-70b\`
     4. Use the interactive user interface to handle your operations -> \`/ai-programmer ui \`
     5. List the available LLM options -> \`/ai-programmer list \`
-    6. More functions are under development.
+    6. Open the contextual bar to ask for code refinement -> \`/ai-programmer regen \`
+    7. More functions are under development.
     `;
 
     const textSender = await modify

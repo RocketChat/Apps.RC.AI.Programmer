@@ -16,6 +16,9 @@ import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } fro
 import { regenerateCodePrompt } from '../constants/CodePrompts';
 import { generateCode } from '../helpers/generateCode';
 import { createRegenerationContextualBar } from "../definition/ui-kit/Modals/createRegenerationContextualBar";
+import { sendNotification } from "../helpers/message";
+import { RoomInteractionStorage } from "../storage/RoomInteraction";
+import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -31,8 +34,21 @@ export class ExecuteBlockActionHandler {
     }
 
     public async handleActions(): Promise<IUIKitResponse> {
-        const { actionId, user, room, triggerId, value, message } =
+        const { actionId, user, triggerId, value, message } =
             this.context.getInteractionData();
+        
+        const persistenceRead = this.read.getPersistenceReader();
+        const association = new RocketChatAssociationRecord(
+            RocketChatAssociationModel.USER,
+            `${user.id}#RoomId`
+        );
+        const [result] = (await persistenceRead.readByAssociation(
+            association
+        )) as Array<{ roomId: string }>;
+        const roomId = result.roomId;
+        const room = (await this.read.getRoomReader().getById(roomId)) as IRoom;
+        if (!room) return this.context.getInteractionResponder().errorResponse();
+        console.log("handleAction(): room ->" + room.id + " roomId: " + roomId);
         const handler = new Handler({
             app: this.app,
             read: this.read,
@@ -45,6 +61,7 @@ export class ExecuteBlockActionHandler {
         });
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                console.log("Room Number: "+room.id);
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_language`);
                 const record = await persis.readByAssociation(association);
@@ -56,6 +73,13 @@ export class ExecuteBlockActionHandler {
                 if (LLMrecord) {
                     handler.setLLM(LLMrecord[0]['LLM']);
                 }
+                await sendNotification(
+                    this.read,
+                    this.modify,
+                    user,
+                    room,
+                    `You have successfully configured to use language: `+record[0]['language'] +' with LLM: '+LLMrecord[0]['LLM']+`!`
+                );
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
@@ -118,35 +142,42 @@ export class ExecuteBlockActionHandler {
                     this.app.getLogger().error("Room is not specified!");
                     break;
                 }
-                const contextualBar = await createRegenerationContextualBar(
-                    this.app,
-                    user,
-                    this.read,
-                    this.persistence,
-                    this.modify,
-                    room
-                );
-        
-                if (contextualBar instanceof Error) {
-                    this.app.getLogger().error(contextualBar.message);
-                    break;
+                try{
+                    const contextualBar = await createRegenerationContextualBar(
+                        this.app,
+                        user,
+                        this.read,
+                        this.persistence,
+                        this.modify,
+                        room
+                    );
+            
+                    if (contextualBar instanceof Error) {
+                        this.app.getLogger().error(contextualBar.message);
+                        break;
+                    }
+                    
+                    if (triggerId) {
+                        await this.modify.getUiController().openSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            user
+                        );
+                        await this.modify.getUiController().updateSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            user
+                        );
+                        return this.context.getInteractionResponder().updateContextualBarViewResponse(contextualBar);
+                    }
                 }
-                
-                if (triggerId) {
-                    await this.modify.getUiController().openSurfaceView(
-                        contextualBar,
-                        {
-                            triggerId,
-                        },
-                        user
-                    );
-                    await this.modify.getUiController().updateSurfaceView(
-                        contextualBar,
-                        {
-                            triggerId,
-                        },
-                        user
-                    );
+                catch (err) {
+                    console.log("Error in when render regen contextual bar: "+err);
+                    this.app.getLogger().error(err);
                 }
                 break;
             }

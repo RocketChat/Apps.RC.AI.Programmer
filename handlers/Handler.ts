@@ -99,7 +99,7 @@ export class Handler {
             this.sender,
             this.room,
             `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
-            (Please note that if you set language or LLM inproperly, you will not get any response!)`
+            (Please set language and LLM properly, otherwise you will not get any response!)`
         );
         const prompt = regenerateCodePrompt(dialogue, last_result);
         const result = await generateCode(
@@ -181,10 +181,9 @@ export class Handler {
             this.sender,
             this.room,
             `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
-            (Please note that if you set language or LLM inproperly, you will not get any response!)`
+            (Please set language and LLM properly, otherwise you will not get any response!)`
         );
-        // this.app.getLogger().debug("use language: "+this.language+", llm:"+this.LLM);
-        // console.log("success use language: "+this.language+", llm:"+this.LLM);
+    
         const prompt = generateCodePrompt(query, this.language);
         const result = await generateCode(
             this.app,

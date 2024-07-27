@@ -28,6 +28,10 @@ import { selectLanguageComponent} from "./selectLanguageComponent";
 import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
+import {
+    RocketChatAssociationModel,
+    RocketChatAssociationRecord,
+} from "@rocket.chat/apps-engine/definition/metadata";
 
 export async function createMainContextualBar(
 	app: AiProgrammerApp,
@@ -40,7 +44,18 @@ export async function createMainContextualBar(
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
+
     try{
+        const association = new RocketChatAssociationRecord(
+            RocketChatAssociationModel.USER,
+            `${user.id}#RoomId`
+        );
+        await persistence.updateByAssociation(
+            association,
+            { roomId: room.id },
+            true
+        );
+        console.log("maincontext(): room ->" + room.id);
         const LanguageComponent = await selectLanguageComponent(app,
             user,
             read,
@@ -100,8 +115,9 @@ export async function createMainContextualBar(
         blocks.push(generateButton);
     }
     catch (err) {
-        console.log("Error in Gen: "+err);
-        return this.app.getLogger().error(err);
+        console.log("Error in maincontext: "+err);
+        app.getLogger().error(err);
+        
     }
 
 	const close = elementBuilder.addButton(
