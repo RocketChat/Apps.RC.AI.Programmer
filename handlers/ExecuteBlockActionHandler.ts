@@ -63,12 +63,12 @@ export class ExecuteBlockActionHandler {
             case Modals.CONFIGURE_ACTION: {
                 console.log("Room Number: "+room.id);
                 const persis = this.read.getPersistenceReader();
-                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_language`);
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                 const record = await persis.readByAssociation(association);
                 if (record) {
                     handler.setLanguage(record[0]['language']);
                 }
-                const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_llm`);
+                const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_llm`);
                 const LLMrecord = await persis.readByAssociation(LLMassociation);
                 if (LLMrecord) {
                     handler.setLLM(LLMrecord[0]['LLM']);
@@ -87,35 +87,35 @@ export class ExecuteBlockActionHandler {
             }
             case Modals.SELECT_LAN_ACTION: {
                 if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_language`);
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                     await this.persistence.updateByAssociation(association, { language: value }, true);
                 }
                 break;
             }
             case Modals.SELECT_LLM_ACTION: {
                 if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `selected_llm`);
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_llm`);
                     await this.persistence.updateByAssociation(association, { LLM: value }, true);
                 }
                 break;
             }
             case Modals.COMMENT_INPUT_ACTION: {
                 if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
                     await this.persistence.updateByAssociation(association, { regen_input: value }, true);
                 }
                 break;
             }
             case Modals.GEN_INPUT_ACTION: {
                 if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `gen_input`);
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                     await this.persistence.updateByAssociation(association, { gen_input: value }, true);
                 }
                 break;
             }
             case Modals.GEN_ACTION: {
                 const persis = this.read.getPersistenceReader();
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `gen_input`);
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                 const gen_record = await persis.readByAssociation(association_input);
                 if (gen_record) {
                     handler.generateCodeFromParam(gen_record[0]['gen_input'] as string);
@@ -126,9 +126,9 @@ export class ExecuteBlockActionHandler {
             }
             case Modals.REGEN_ACTION: {
                 const persis = this.read.getPersistenceReader();
-                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
                 const result_record = await persis.readByAssociation(association);
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `regen_input`);
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
                 const regen_record = await persis.readByAssociation(association_input);
                 if (result_record && regen_record) {
                     handler.regenerateCodeFromResult(result_record[0]['result'], regen_record[0]['regen_input']);

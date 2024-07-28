@@ -41,7 +41,7 @@ export class Handler {
     }
 
     public async setLanguage(query : string) : Promise<void> {
-        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `language`);
+        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#language`);
         const persis = this.read.getPersistenceReader();
         try {
             await this.persistence.updateByAssociation(association, { language: query }, true);
@@ -54,7 +54,7 @@ export class Handler {
     }
 
     public async setLLM(query : string) : Promise<void> {
-        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `LLM`);
+        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#LLM`);
         const persis = this.read.getPersistenceReader();
         try {
             await this.persistence.updateByAssociation(association, { LLM: query }, true);
@@ -70,7 +70,7 @@ export class Handler {
         
         const persis = this.read.getPersistenceReader();
         try{
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'language');
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#language`);
             const record = await persis.readByAssociation(association);
             if (record != undefined) {
                 this.language = record[0]['language'] as string;
@@ -79,7 +79,7 @@ export class Handler {
                 console.log("Read language Fail!");
                 this.language = 'Python';
             }
-            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'LLM');
+            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#LLM`);
             const LLMrecord = await persis.readByAssociation(LLMassociation);
             if (LLMrecord != undefined) {
                 this.LLM = LLMrecord[0]['LLM'] as string;
@@ -123,7 +123,7 @@ export class Handler {
                 `Something is wrong with the AI programmer bot, please check your settings to ensure correct language and LLM are configured!`
             );
         } else {
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#result`);
             await this.persistence.updateByAssociation(association, { result: result }, true);
             const regen_block = await regenerationComponent(this.app,
                 this.sender,
@@ -152,7 +152,7 @@ export class Handler {
     public async generateCodeFromParam(query: string){  
         const persis = this.read.getPersistenceReader();
         try{
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'language');
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#language`);
             const record = await persis.readByAssociation(association);
             if (record != undefined) {
                 this.language = record[0]['language'] as string;
@@ -161,7 +161,7 @@ export class Handler {
                 console.log("Read language Fail!");
                 this.language = 'Python';
             }
-            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'LLM');
+            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#LLM`);
             const LLMrecord = await persis.readByAssociation(LLMassociation);
             if (LLMrecord != undefined) {
                 this.LLM = LLMrecord[0]['LLM'] as string;
@@ -206,7 +206,7 @@ export class Handler {
                 `Something is wrong with the AI programmer bot, please check your settings to ensure correct language and LLM are configured!`
             );
         } else {
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `result`);
+            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#result`);
             await this.persistence.updateByAssociation(association, { result: result }, true);
             const regen_block = await regenerationComponent(this.app,
                 this.sender,
