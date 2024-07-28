@@ -19,6 +19,8 @@ import { createRegenerationContextualBar } from "../definition/ui-kit/Modals/cre
 import { sendNotification } from "../helpers/message";
 import { RoomInteractionStorage } from "../storage/RoomInteraction";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
+import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
+import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -143,7 +145,7 @@ export class ExecuteBlockActionHandler {
                     break;
                 }
                 try{
-                    const contextualBar = await createRegenerationContextualBar(
+                    const modal = await regenerateCodeModal(
                         this.app,
                         user,
                         this.read,
@@ -151,32 +153,23 @@ export class ExecuteBlockActionHandler {
                         this.modify,
                         room
                     );
-            
-                    if (contextualBar instanceof Error) {
-                        this.app.getLogger().error(contextualBar.message);
+                    if (modal instanceof Error) {
+                        this.app.getLogger().error(modal.message);
                         break;
                     }
                     
                     if (triggerId) {
                         await this.modify.getUiController().openSurfaceView(
-                            contextualBar,
+                            modal,
                             {
                                 triggerId,
                             },
                             user
                         );
-                        await this.modify.getUiController().updateSurfaceView(
-                            contextualBar,
-                            {
-                                triggerId,
-                            },
-                            user
-                        );
-                        return this.context.getInteractionResponder().updateContextualBarViewResponse(contextualBar);
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render regen contextual bar: "+err);
+                    console.log("Error in when render regen modal: "+err);
                     this.app.getLogger().error(err);
                 }
                 break;
