@@ -38,6 +38,11 @@ export class ExecuteViewClosedHandler {
                 console.log("pressed close3");
                 break;
             }
+            case Modals.GEN_ACTION: {
+                console.log("gen_action closed");
+               
+                break;
+            }
         }
 
         return this.context.getInteractionResponder().successResponse();

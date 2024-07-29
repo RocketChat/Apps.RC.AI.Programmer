@@ -80,29 +80,26 @@ export async function generateCodeModal(
                 blockId: Modals.GEN_INPUT_BLOCK,
             }
         );
+        const generateButton = ButtonInSectionComponent(
+            {
+                app,
+                buttonText: "Generate Code Now!",
+                style: ButtonStyle.PRIMARY,
+            },
+            {
+                actionId: Modals.GEN_ACTION,
+                blockId: Modals.GEN_BLOCK,
+            }
+        );
         blocks.push(configureText);
         blocks.push(generateInput);
+        blocks.push(generateButton)
     }
     catch (err) {
         console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
 
-	const close = elementBuilder.addButton(
-        { text: "close", style: ButtonStyle.DANGER },
-        {
-            actionId: Modals.MAIN_CLOSE_ACTION,
-            blockId: Modals.MAIN_CLOSE_BLOCK,
-        }
-    );
-
-    const submit = elementBuilder.addButton(
-        { text: "submit", style: ButtonStyle.PRIMARY },
-        {
-            actionId: Modals.GEN_ACTION,
-            blockId: Modals.GEN_BLOCK,
-        }
-    )
     
 	return {
         id: viewId || 'modalId',
@@ -112,7 +109,5 @@ export async function generateCodeModal(
             text: "Ai Programmer",
         },
         blocks,
-        submit,
-        close,
     };
 }

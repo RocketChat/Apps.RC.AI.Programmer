@@ -15,7 +15,7 @@ import { Handler } from "./Handler";
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { regenerateCodePrompt } from '../constants/CodePrompts';
 import { generateCode } from '../helpers/generateCode';
-import { createRegenerationContextualBar } from "../definition/ui-kit/Modals/createRegenerationContextualBar";
+import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainContextualBar";
 import { sendNotification } from "../helpers/message";
 import { RoomInteractionStorage } from "../storage/RoomInteraction";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
@@ -67,21 +67,50 @@ export class ExecuteBlockActionHandler {
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                 const record = await persis.readByAssociation(association);
+                let selected_language = "";
                 if (record) {
-                    handler.setLanguage(record[0]['language']);
+                    selected_language = record[0]['language'];
+                    handler.setLanguage(selected_language);
                 }
+                let selected_llm = "";
                 const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_llm`);
                 const LLMrecord = await persis.readByAssociation(LLMassociation);
                 if (LLMrecord) {
-                    handler.setLLM(LLMrecord[0]['LLM']);
+                    selected_llm = LLMrecord[0]['LLM'];
+                    handler.setLLM(selected_llm);
                 }
-                await sendNotification(
-                    this.read,
-                    this.modify,
-                    user,
-                    room,
-                    `You have successfully configured to use language: `+record[0]['language'] +' with LLM: '+LLMrecord[0]['LLM']+`!`
-                );
+                if (selected_language != "" && selected_llm != ""){
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        user,
+                        room,
+                        `You have successfully configured language: `+selected_language +' with LLM: '+selected_llm+` for code generation!`
+                    );
+                    const contextualBar = await createMainContextualBar(
+                            this.app,
+                            user,
+                            this.read,
+                            this.persistence,
+                            this.modify,
+                            room,
+                            undefined,
+                            true
+                    );
+                    if (contextualBar instanceof Error) {
+                        this.app.getLogger().error(contextualBar.message);
+                        break;
+                    }
+                    if (triggerId) {
+                        await this.modify.getUiController().updateSurfaceView(
+                            contextualBar,
+                            {
+                                triggerId,
+                            },
+                            user
+                        );
+                    }
+                }
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
@@ -116,9 +145,11 @@ export class ExecuteBlockActionHandler {
                 break;
             }
             case Modals.GEN_ACTION: {
+                console.log("gen_action 1");
                 const persis = this.read.getPersistenceReader();
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                 const gen_record = await persis.readByAssociation(association_input);
+                console.log("gen_action 2");
                 if (gen_record) {
                     handler.generateCodeFromParam(gen_record[0]['gen_input'] as string);
                 } else {
@@ -172,6 +203,57 @@ export class ExecuteBlockActionHandler {
                 }
                 catch (err) {
                     console.log("Error in when render regen modal: "+err);
+                    this.app.getLogger().error(err);
+                }
+                break;
+            }
+            case Modals.GEN_BUTTON_ACTION: {
+                if (!room) {
+                    this.app.getLogger().error("Room is not specified!");
+                    break;
+                }
+                try{
+                    let language = handler.getLanguage()
+                    let LLM = handler.getLLM()
+                    if (language == undefined || LLM == undefined){
+                        await sendNotification(
+                            this.read,
+                            this.modify,
+                            user,
+                            room,
+                            `Please make sure you have set correct language and LLM !`
+                        );
+                        break;
+                    }
+                    else {
+                        const modal = await generateCodeModal(
+                            this.app,
+                            user,
+                            room,
+                            this.read,
+                            this.modify,
+                            this.http,
+                            this.persistence,
+                            triggerId
+                        );
+                        if (modal instanceof Error) {
+                            this.app.getLogger().error(modal.message);
+                            break;
+                        }
+                        
+                        if (triggerId) {
+                            await this.modify.getUiController().openSurfaceView(
+                                modal,
+                                {
+                                    triggerId,
+                                },
+                                user
+                            );
+                        }
+                    }
+                }
+                catch (err) {
+                    console.log("Error in when render gen modal: "+err);
                     this.app.getLogger().error(err);
                 }
                 break;

@@ -77,8 +77,20 @@ export async function regenerateCodeModal(
                 blockId: Modals.COMMENT_INPUT_BLOCK,
             }
         );
-    
+        const regenerateButton = ButtonInSectionComponent(
+            {
+                app,
+                buttonText: "Help me refine it!",
+                style: ButtonStyle.PRIMARY,
+            },
+            {
+                actionId: Modals.GEN_ACTION,
+                blockId: Modals.GEN_BLOCK,
+            }
+        );
+        blocks.push(configureText);
         blocks.push(regenerateInput);
+        blocks.push(regenerateButton);
     }
     catch (err) {
         console.log("Error in Gen: "+err);

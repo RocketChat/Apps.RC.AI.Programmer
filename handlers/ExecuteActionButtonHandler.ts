@@ -38,6 +38,11 @@ export class ExecuteActionButtonHandler {
                 console.log("pressed close");
                 break;
             }
+            case Modals.GEN_ACTION: {
+                console.log("gen_action action button");
+               
+                break;
+            }
         }
 
         return this.context.getInteractionResponder().successResponse();

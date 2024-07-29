@@ -41,6 +41,7 @@ export async function createMainContextualBar(
 	modify: IModify,
 	room: IRoom,
 	viewId?: string,
+    showGen?: boolean,
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
@@ -83,14 +84,18 @@ export async function createMainContextualBar(
         const generateButton = ButtonInSectionComponent(
             {
                 app,
-                buttonText: "Generate",
+                buttonText: "Start to Generate Code",
                 style: ButtonStyle.PRIMARY,
             },
             {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
+                actionId: Modals.GEN_BUTTON_ACTION,
+                blockId: Modals.GEN_BUTTON_BLOCK,
             }
         );
+        const configureText : SectionBlock= {
+            type: 'section',
+            text: blockBuilder.createTextObjects([`Your have set valid configuration, you can now generate code:`])[0],
+        };
         const generateInput = inputElementComponent(
             {
                 app,
@@ -111,8 +116,10 @@ export async function createMainContextualBar(
         blocks.push(LLMComponent);
         blocks.push(startButton);
         blocks.push(divider);
-        blocks.push(generateInput);
-        blocks.push(generateButton);
+        if(showGen){
+            blocks.push(configureText);
+            blocks.push(generateButton);
+        }
     }
     catch (err) {
         console.log("Error in maincontext: "+err);
