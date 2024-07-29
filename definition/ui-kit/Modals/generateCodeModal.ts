@@ -30,36 +30,40 @@ import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
+import { Handler } from "../../../handlers/Handler";
 
 
 export async function generateCodeModal(
 	app: AiProgrammerApp,
-	user: IUser,
-	read: IRead,
-	persistence: IPersistence,
-	modify: IModify,
-	room: IRoom,
-	viewId?: string,
+    user: IUser,
+    room: IRoom,
+    read: IRead,
+    modify: IModify,
+    http: IHttp,
+    persistence: IPersistence,
+    triggerId?: string,
+    threadId?: string,
+    viewId?: string
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
-    let language = "";
-    let LLM = "";
+    
     try{
-        const persis = read.getPersistenceReader();
-        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#language`);
-        const record = await persis.readByAssociation(association);
-        if (record != undefined) {
-            language = record[0]['language'] as string;
-        }
-        const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#LLM`);
-        const LLMrecord = await persis.readByAssociation(LLMassociation);
-        if (LLMrecord != undefined) {
-            LLM = LLMrecord[0]['LLM'] as string;
-        }
-        const configureText = {
-            type: TextObjectType.MRKDWN,
-            text: `You are using language: `+ language+' with LLM: '+LLM+` to generate code.`,
+        const handler = new Handler({
+            app: app,
+            read: read,
+            modify: modify,
+            persistence: persistence,
+            http: http,
+            sender: user,
+            room: room,
+            triggerId: triggerId,
+        });
+        let language = await handler.getLanguage();
+        let LLM = await handler.getLLM();
+        const configureText : SectionBlock= {
+            type: 'section',
+            text: blockBuilder.createTextObjects([`User Configuration: You are using language: `+ language+' with LLM: '+LLM+` .`])[0],
         };
         const generateInput = inputElementComponent(
             {
@@ -80,7 +84,7 @@ export async function generateCodeModal(
         blocks.push(generateInput);
     }
     catch (err) {
-        console.log("Error in Gen: "+err);
+        console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
 

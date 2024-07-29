@@ -29,20 +29,39 @@ import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
-
+import { Handler } from "../../../handlers/Handler";
 
 export async function regenerateCodeModal(
 	app: AiProgrammerApp,
-	user: IUser,
-	read: IRead,
-	persistence: IPersistence,
-	modify: IModify,
-	room: IRoom,
-	viewId?: string,
+    user: IUser,
+    room: IRoom,
+    read: IRead,
+    modify: IModify,
+    http: IHttp,
+    persistence: IPersistence,
+    triggerId?: string,
+    threadId?: string,
+    viewId?: string
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
     try{
+        const handler = new Handler({
+            app: app,
+            read: read,
+            modify: modify,
+            persistence: persistence,
+            http: http,
+            sender: user,
+            room: room,
+            triggerId: triggerId,
+        });
+        let language = await handler.getLanguage();
+        let LLM = await handler.getLLM();
+        const configureText : SectionBlock= {
+            type: 'section',
+            text: blockBuilder.createTextObjects([`User Configuration: You are using language: `+ language+' with LLM: '+LLM+` .`])[0],
+        };
         const regenerateInput = inputElementComponent(
             {
                 app,

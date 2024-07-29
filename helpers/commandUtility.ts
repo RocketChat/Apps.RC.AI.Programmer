@@ -76,10 +76,12 @@ export class CommandUtility {
                     const modal = await generateCodeModal(
                         this.app,
                         this.sender,
+                        this.room,
                         this.read,
-                        this.persistence,
                         this.modify,
-                        this.room
+                        this.http,
+                        this.persistence,
+                        this.triggerId
                     );
                     if (modal instanceof Error) {
                         this.app.getLogger().error(modal.message);

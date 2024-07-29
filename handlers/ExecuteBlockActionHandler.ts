@@ -148,10 +148,12 @@ export class ExecuteBlockActionHandler {
                     const modal = await regenerateCodeModal(
                         this.app,
                         user,
+                        room,
                         this.read,
-                        this.persistence,
                         this.modify,
-                        room
+                        this.http,
+                        this.persistence,
+                        triggerId
                     );
                     if (modal instanceof Error) {
                         this.app.getLogger().error(modal.message);

@@ -66,8 +66,7 @@ export class Handler {
         }
     }
 
-    public async regenerateCodeFromResult(dialogue: string, last_result: string){
-        
+    public async getLanguage(): Promise<string> {
         const persis = this.read.getPersistenceReader();
         try{
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#language`);
@@ -79,6 +78,16 @@ export class Handler {
                 console.log("Read language Fail!");
                 this.language = 'Python';
             }
+        }
+        catch (err) {
+            console.log("Error read languange: "+err); 
+        }
+        return this.language;
+    }
+
+    public async getLLM(): Promise<string> {
+        const persis = this.read.getPersistenceReader();
+        try{
             const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#LLM`);
             const LLMrecord = await persis.readByAssociation(LLMassociation);
             if (LLMrecord != undefined) {
@@ -90,7 +99,19 @@ export class Handler {
             }
         }
         catch (err) {
-            console.log("Error in Gen: "+err);
+            console.log("Error read LLM: "+err); 
+        }
+        return this.LLM;
+    }
+
+    public async regenerateCodeFromResult(dialogue: string, last_result: string){
+        
+        try{
+            this.language = await this.getLanguage();
+            this.LLM = await this.getLLM();
+        }
+        catch (err) {
+            console.log("Error in getting language and llm: "+err);
             return this.app.getLogger().error(err);
         }
         await sendNotification(
@@ -150,29 +171,13 @@ export class Handler {
     }
 
     public async generateCodeFromParam(query: string){  
-        const persis = this.read.getPersistenceReader();
+       
         try{
-            const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#language`);
-            const record = await persis.readByAssociation(association);
-            if (record != undefined) {
-                this.language = record[0]['language'] as string;
-            }
-            else {
-                console.log("Read language Fail!");
-                this.language = 'Python';
-            }
-            const LLMassociation = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#LLM`);
-            const LLMrecord = await persis.readByAssociation(LLMassociation);
-            if (LLMrecord != undefined) {
-                this.LLM = LLMrecord[0]['LLM'] as string;
-            }
-            else {
-                console.log("Read LLM Fail!");
-                this.LLM = 'mistral-7b';
-            }
+            this.language = await this.getLanguage();
+            this.LLM = await this.getLLM();
         }
         catch (err) {
-            console.log("Error in Gen: "+err);
+            console.log("Error in getting language and llm: "+err);
             return this.app.getLogger().error(err);
         }
         await sendNotification(
