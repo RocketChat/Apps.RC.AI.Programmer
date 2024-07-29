@@ -66,7 +66,7 @@ export async function regenerateCodeModal(
             {
                 app,
                 placeholder: "Please help me refine the code to make it...",
-                label: "Not satisfied with code result? Refine it with:",
+                label: "Not satisfied with code result? Refine it with your requirements:",
                 optional: false,
                 multiline: true,
                 dispatchActionConfigOnInput: true,
@@ -96,22 +96,6 @@ export async function regenerateCodeModal(
         console.log("Error in Gen: "+err);
         this.app.getLogger().error(err);
     }
-
-	const close = elementBuilder.addButton(
-        { text: "close", style: ButtonStyle.DANGER },
-        {
-            actionId: Modals.MAIN_CLOSE_ACTION,
-            blockId: Modals.MAIN_CLOSE_BLOCK,
-        }
-    );
-
-    const submit = elementBuilder.addButton(
-        { text: "submit", style: ButtonStyle.PRIMARY },
-        {
-            actionId: Modals.REGEN_ACTION,
-            blockId: Modals.REGEN_BLOCK,
-        }
-    )
     
 	return {
         id: viewId || 'modalId',
@@ -121,7 +105,5 @@ export async function regenerateCodeModal(
             text: "Ai Programmer",
         },
         blocks,
-        submit,
-        close,
     };
 }
