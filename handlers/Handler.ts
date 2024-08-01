@@ -119,7 +119,7 @@ export class Handler {
             this.modify,
             this.sender,
             this.room,
-            `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
+            `You are using language: `+this.language+' with LLM: '+this.LLM+` to refine code. Please wait for the response...
             (Please set language and LLM properly, otherwise you will not get any response!)`
         );
         const prompt = regenerateCodePrompt(dialogue, last_result);
