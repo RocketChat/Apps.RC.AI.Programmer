@@ -17,7 +17,6 @@ import { regenerateCodePrompt } from '../constants/CodePrompts';
 import { generateCode } from '../helpers/generateCode';
 import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainContextualBar";
 import { sendNotification } from "../helpers/message";
-import { RoomInteractionStorage } from "../storage/RoomInteraction";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
@@ -148,7 +147,9 @@ export class ExecuteBlockActionHandler {
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                 const gen_record = await persis.readByAssociation(association_input);
                 if (gen_record) {
-                    handler.generateCodeFromParam(gen_record[0]['gen_input'] as string);
+                    let input_str = gen_record[0]['gen_input'] as string
+                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
+                    handler.generateCodeFromParam(input_str);
                 } else {
                     this.app.getLogger().debug("error: no gen command");
                 }
@@ -162,8 +163,10 @@ export class ExecuteBlockActionHandler {
                 const regen_record = await persis.readByAssociation(association_input);
                 if (result_record && regen_record) {
                     let result_str = result_record[0]['result'] as string
-                    result_str = result_str.substring(0,Math.min(4000, result_str.length))
-                    handler.regenerateCodeFromResult(result_str, regen_record[0]['regen_input']);
+                    result_str = result_str.substring(0,Math.min(3000, result_str.length))
+                    let input_str = regen_record[0]['regen_input'] as string
+                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
+                    handler.regenerateCodeFromResult(result_str, input_str);
                 } else {
                     this.app.getLogger().debug("error: no result/regen command");
                 }

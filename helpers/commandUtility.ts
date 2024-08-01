@@ -73,31 +73,6 @@ export class CommandUtility {
         } else {
             switch (this.command[0]) {
                 case SubcommandEnum.TEST: {
-                    const modal = await generateCodeModal(
-                        this.app,
-                        this.sender,
-                        this.room,
-                        this.read,
-                        this.modify,
-                        this.http,
-                        this.persistence,
-                        this.triggerId
-                    );
-                    if (modal instanceof Error) {
-                        this.app.getLogger().error(modal.message);
-                        return;
-                    }
-                    
-                    const triggerId = this.triggerId;
-                    if (triggerId) {
-                        await this.modify.getUiController().openSurfaceView(
-                            modal,
-                            {
-                                triggerId,
-                            },
-                            this.sender
-                        );
-                    }
                     break;
                 }
                 case SubcommandEnum.UI: {
