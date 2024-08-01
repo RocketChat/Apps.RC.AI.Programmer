@@ -63,7 +63,6 @@ export class ExecuteBlockActionHandler {
         });
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
-                console.log("Room Number: "+room.id);
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                 const record = await persis.readByAssociation(association);
@@ -145,11 +144,9 @@ export class ExecuteBlockActionHandler {
                 break;
             }
             case Modals.GEN_ACTION: {
-                console.log("gen_action 1");
                 const persis = this.read.getPersistenceReader();
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                 const gen_record = await persis.readByAssociation(association_input);
-                console.log("gen_action 2");
                 if (gen_record) {
                     handler.generateCodeFromParam(gen_record[0]['gen_input'] as string);
                 } else {
@@ -164,7 +161,9 @@ export class ExecuteBlockActionHandler {
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
                 const regen_record = await persis.readByAssociation(association_input);
                 if (result_record && regen_record) {
-                    handler.regenerateCodeFromResult(result_record[0]['result'], regen_record[0]['regen_input']);
+                    let result_str = result_record[0]['result'] as string
+                    result_str = result_str.substring(0,Math.min(4000, result_str.length))
+                    handler.regenerateCodeFromResult(result_str, regen_record[0]['regen_input']);
                 } else {
                     this.app.getLogger().debug("error: no result/regen command");
                 }
