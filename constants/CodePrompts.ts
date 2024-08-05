@@ -29,7 +29,7 @@ const REGEN_PROMPT = `You are an AI programmer assisting with code refinement. Y
 
 You will analyze the following information:
 
-1. Last generated output (The output you generated in last round, including any text descriptions and the code block, you should only focus on the code part): {last_result} 
+1. Last generated output (The output you generated in last round, including some text descriptions and the code block, you should be aware of the context and focus on the code part): {last_result} 
 
 2. User's feedback and requirements: {dialogue} 
 

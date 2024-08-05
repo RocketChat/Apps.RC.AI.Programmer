@@ -27,7 +27,7 @@ import { ButtonInActionComponent } from "./buttonInActionComponent";
 import { ButtonInSectionComponent } from "./buttonInSectionComponent";
 import { Modals } from "../../../enum/Modals";
 
-export async function regenerationComponent(
+export async function shareComponent(
 	app: AiProgrammerApp,
 	user: IUser,
 	read: IRead,
@@ -39,19 +39,19 @@ export async function regenerationComponent(
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const buttonElement = elementBuilder.addButton(
         {
-            text: "Refine the code result",
+            text: "Share your code",
             style: ButtonStyle.PRIMARY,
         },
         {
-            blockId: Modals.REGEN_BUTTON_BLOCK,
-            actionId: Modals.REGEN_BUTTON_ACTION,
+            blockId: Modals.SHARE_BUTTON_BLOCK,
+            actionId: Modals.SHARE_BUTTON_ACTION,
         }
     );
     const actionBlock = blockBuilder.createActionBlock({
         elements: [buttonElement],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Not satisfied with the above code result?",
+        text: "Want to share your code with other users in channel?",
     });
 
     return [textBlock, actionBlock];

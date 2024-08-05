@@ -16,10 +16,11 @@ import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } fro
 import { regenerateCodePrompt } from '../constants/CodePrompts';
 import { generateCode } from '../helpers/generateCode';
 import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainContextualBar";
-import { sendNotification } from "../helpers/message";
+import { sendNotification, sendMessage } from "../helpers/message";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
+import { shareCodeModal } from "../definition/ui-kit/Modals/shareCodeModal";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -142,6 +143,30 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
+            case Modals.SHARE_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                    await this.persistence.updateByAssociation(association, { share_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_ACTION: {
+                const persis = this.read.getPersistenceReader();
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                const share_record = await persis.readByAssociation(association_input);
+                if (share_record) {
+                    let input_str = share_record[0]['share_input'] as string
+                    await sendMessage(
+                            this.modify,
+                            room,
+                            user,
+                            input_str,
+                        );
+                } else {
+                    this.app.getLogger().debug("error: no sharing content");
+                }
+                break;
+            }
             case Modals.GEN_ACTION: {
                 const persis = this.read.getPersistenceReader();
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
@@ -256,6 +281,53 @@ export class ExecuteBlockActionHandler {
                 }
                 catch (err) {
                     console.log("Error in when render gen modal: "+err);
+                    this.app.getLogger().error(err);
+                }
+                break;
+            }
+            case Modals.SHARE_BUTTON_ACTION: {
+                if (!room) {
+                    this.app.getLogger().error("Room is not specified!");
+                    break;
+                }
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
+                    const result_record = await persis.readByAssociation(association);
+                    
+                    if (result_record) {
+                        let result_str = result_record[0]['result'] as string;
+                        const modal = await shareCodeModal(
+                            this.app,
+                            user,
+                            room,
+                            this.read,
+                            this.modify,
+                            this.http,
+                            this.persistence,
+                            result_str,
+                            triggerId
+                        );
+                        if (modal instanceof Error) {
+                            this.app.getLogger().error(modal.message);
+                            break;
+                        }
+                        
+                        if (triggerId) {
+                            await this.modify.getUiController().openSurfaceView(
+                                modal,
+                                {
+                                    triggerId,
+                                },
+                                user
+                            );
+                        }
+                    } else {
+                        this.app.getLogger().debug("error: no share content");
+                    }
+                }
+                catch (err) {
+                    console.log("Error in when render share modal: "+err);
                     this.app.getLogger().error(err);
                 }
                 break;

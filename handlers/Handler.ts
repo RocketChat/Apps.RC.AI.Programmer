@@ -10,8 +10,9 @@ import {
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { generateCode } from '../helpers/generateCode';
 import { regenerateCodePrompt, generateCodePrompt } from '../constants/CodePrompts';
-import { sendNotification } from "../helpers/message";
+import { sendNotification, sendMessage } from "../helpers/message";
 import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
+import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 
 export class Handler {
     public app: AiProgrammerApp;
@@ -135,7 +136,8 @@ export class Handler {
             this.LLM,
             prompt
         );
-        if (!result) {
+        const code_content = this.extractCodeBlockContent(result)
+        if (!code_content)  {
             await sendNotification(
                 this.read,
                 this.modify,
@@ -145,28 +147,8 @@ export class Handler {
             );
         } else {
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#result`);
-            await this.persistence.updateByAssociation(association, { result: result }, true);
-            const regen_block = await regenerationComponent(this.app,
-                this.sender,
-                this.read,
-                this.persistence,
-                this.modify,
-                this.room);
-            await sendNotification(
-                this.read,
-                this.modify,
-                this.sender,
-                this.room,
-                result,
-            );
-            await sendNotification(
-                this.read,
-                this.modify,
-                this.sender,
-                this.room,
-                undefined,
-                regen_block,
-            );
+            await this.persistence.updateByAssociation(association, { result: code_content }, true);
+            this.sendCodeResultwithBlocks(code_content);
         }
     }
 
@@ -202,7 +184,8 @@ export class Handler {
             this.LLM,
             prompt
         );
-        if (!result) {
+        const code_content = this.extractCodeBlockContent(result)
+        if (!code_content) {
             await sendNotification(
                 this.read,
                 this.modify,
@@ -212,28 +195,57 @@ export class Handler {
             );
         } else {
             const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${this.sender.id}#result`);
-            await this.persistence.updateByAssociation(association, { result: result }, true);
-            const regen_block = await regenerationComponent(this.app,
-                this.sender,
-                this.read,
-                this.persistence,
-                this.modify,
-                this.room);
-            await sendNotification(
-                this.read,
-                this.modify,
-                this.sender,
-                this.room,
-                result,
-            );
-            await sendNotification(
-                this.read,
-                this.modify,
-                this.sender,
-                this.room,
-                undefined,
-                regen_block,
-            );
+            await this.persistence.updateByAssociation(association, { result: code_content }, true);
+            this.sendCodeResultwithBlocks(code_content);
         }
     }
+    private async sendCodeResultwithBlocks(result: string){
+        const regen_block = await regenerationComponent(this.app,
+            this.sender,
+            this.read,
+            this.persistence,
+            this.modify,
+            this.room);
+        const share_block = await shareComponent(this.app,
+            this.sender,
+            this.read,
+            this.persistence,
+            this.modify,
+            this.room);
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            result,
+        );
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            undefined,
+            regen_block,
+        );
+        await sendNotification(
+            this.read,
+            this.modify,
+            this.sender,
+            this.room,
+            undefined,
+            share_block,
+        );
+    }
+    private extractCodeBlockContent(text: string): string | null {
+        const codeBlockRegex = /```[\s\S]*?\n([\s\S]*?)```/;
+        const match = text.match(codeBlockRegex);
+        
+        if (match && match[1]) {
+            const extractedContent = match[1].trim();
+            return '```\n' + extractedContent + '\n```';
+        }
+        
+        return null;
+    }
+    
 }

@@ -34,4 +34,10 @@ export enum Modals {
     REGEN_BUTTON_ACTION = "regen-button-action",
     GEN_BUTTON_BLOCK = "gen-button-block",
     GEN_BUTTON_ACTION = "gen-button-action",
+    SHARE_BUTTON_BLOCK = "share-button-block",
+    SHARE_BUTTON_ACTION = "share-button-action",
+    SHARE_INPUT_BLOCK = "share-input-block",
+    SHARE_INPUT_ACTION = "share-input-action",
+    SHARE_BLOCK = "share-block",
+    SHARE_ACTION = "share-action"
 }
