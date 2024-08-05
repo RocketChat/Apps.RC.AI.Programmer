@@ -27,8 +27,8 @@ export async function helperMessage({
     1. Generate code pieces with specific description -> \`/ai-programmer gen code_content\`
     2. Set the language you want to use to generate code -> \`/ai-programmer set C++\`
     3. Switch to the LLM you want to use to generate code -> \`/ai-programmer llm llama3-70b\`
-    4. Use the interactive user interface to handle your operations -> \`/ai-programmer ui \`
-    5. List the available LLM options -> \`/ai-programmer list \`
+    4. List the available LLM options -> \`/ai-programmer list \`
+    5. Use the interactive user interface to handle your operations -> \`/ai-programmer ui \`
     6. More functions are under development.
     `;
 

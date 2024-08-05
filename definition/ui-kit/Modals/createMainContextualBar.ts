@@ -28,6 +28,10 @@ import { selectLanguageComponent} from "./selectLanguageComponent";
 import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
+import {
+    RocketChatAssociationModel,
+    RocketChatAssociationRecord,
+} from "@rocket.chat/apps-engine/definition/metadata";
 
 export async function createMainContextualBar(
 	app: AiProgrammerApp,
@@ -37,10 +41,22 @@ export async function createMainContextualBar(
 	modify: IModify,
 	room: IRoom,
 	viewId?: string,
+    showGen?: boolean,
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
+
     try{
+        const association = new RocketChatAssociationRecord(
+            RocketChatAssociationModel.USER,
+            `${user.id}#RoomId`
+        );
+        await persistence.updateByAssociation(
+            association,
+            { roomId: room.id },
+            true
+        );
+        console.log("maincontext(): room ->" + room.id);
         const LanguageComponent = await selectLanguageComponent(app,
             user,
             read,
@@ -68,14 +84,18 @@ export async function createMainContextualBar(
         const generateButton = ButtonInSectionComponent(
             {
                 app,
-                buttonText: "Generate",
+                buttonText: "Start to Generate Code",
                 style: ButtonStyle.PRIMARY,
             },
             {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
+                actionId: Modals.GEN_BUTTON_ACTION,
+                blockId: Modals.GEN_BUTTON_BLOCK,
             }
         );
+        const configureText : SectionBlock= {
+            type: 'section',
+            text: blockBuilder.createTextObjects([`Your have set valid configuration, you can now generate code:`])[0],
+        };
         const generateInput = inputElementComponent(
             {
                 app,
@@ -96,12 +116,15 @@ export async function createMainContextualBar(
         blocks.push(LLMComponent);
         blocks.push(startButton);
         blocks.push(divider);
-        blocks.push(generateInput);
-        blocks.push(generateButton);
+        if(showGen){
+            blocks.push(configureText);
+            blocks.push(generateButton);
+        }
     }
     catch (err) {
-        console.log("Error in Gen: "+err);
-        return this.app.getLogger().error(err);
+        console.log("Error in maincontext: "+err);
+        app.getLogger().error(err);
+        
     }
 
 	const close = elementBuilder.addButton(

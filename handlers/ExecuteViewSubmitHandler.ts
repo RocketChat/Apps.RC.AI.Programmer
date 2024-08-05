@@ -38,6 +38,10 @@ export class ExecuteViewSubmitHandler {
                 console.log("pressed close4");
                 break;
             }
+            case Modals.GEN_ACTION: {
+                console.log("gen_action view submit");
+                break;
+            }
         }
 
         return this.context.getInteractionResponder().successResponse();

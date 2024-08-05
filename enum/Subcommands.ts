@@ -12,4 +12,5 @@ export enum SubcommandEnum {
     PROFILE = 'me',
     CREATE= 'create',
     LIST ='list',
+    REGEN = 'regen',
 }
