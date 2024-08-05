@@ -109,7 +109,6 @@ export class CommandUtility {
                     break;
                 }
                 case SubcommandEnum.LIST: {
-                    console.log("Room Number: "+this.room.id);
                     await sendNotification(
                         this.read,
                         this.modify,
