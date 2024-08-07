@@ -43,7 +43,7 @@ export class BlockBuilder implements IBlockBuilder {
         return actionBlock;
     }
 
-    public createTextObjects(fields: Array<string>): Array<TextObject> {
+    private createTextObjects(fields: Array<string>): Array<TextObject> {
         return fields.map((field) => {
             return {
                 type: TextObjectType.MRKDWN,

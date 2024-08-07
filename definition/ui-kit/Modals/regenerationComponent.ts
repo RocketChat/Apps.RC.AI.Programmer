@@ -39,7 +39,7 @@ export async function regenerationComponent(
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const buttonElement = elementBuilder.addButton(
         {
-            text: "Refine the code result",
+            text: "Regenerate",
             style: ButtonStyle.PRIMARY,
         },
         {
@@ -51,7 +51,7 @@ export async function regenerationComponent(
         elements: [buttonElement],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Not satisfied with the above code result?",
+        text: "Not Satisfied with the above code result?",
     });
 
     return [textBlock, actionBlock];

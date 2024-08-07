@@ -36,7 +36,6 @@ export async function selectLanguageComponent(
 	room: IRoom,
 	viewId?: string,
 ): Promise<InputBlock> {
-    
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const languageModels = [
         {name:'python', id:'python'},

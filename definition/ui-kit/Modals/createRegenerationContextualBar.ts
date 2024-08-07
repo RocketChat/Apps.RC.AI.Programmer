@@ -28,45 +28,35 @@ import { selectLanguageComponent} from "./selectLanguageComponent";
 import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
-import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
-import { Handler } from "../../../handlers/Handler";
 
-export async function regenerateCodeModal(
+export async function createRegenerationContextualBar(
 	app: AiProgrammerApp,
-    user: IUser,
-    room: IRoom,
-    read: IRead,
-    modify: IModify,
-    http: IHttp,
-    persistence: IPersistence,
-    triggerId?: string,
-    threadId?: string,
-    viewId?: string
+	user: IUser,
+	read: IRead,
+	persistence: IPersistence,
+	modify: IModify,
+	room: IRoom,
+	viewId?: string,
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
     try{
-        const handler = new Handler({
-            app: app,
-            read: read,
-            modify: modify,
-            persistence: persistence,
-            http: http,
-            sender: user,
-            room: room,
-            triggerId: triggerId,
-        });
-        let language = await handler.getLanguage();
-        let LLM = await handler.getLLM();
-        const configureText : SectionBlock= {
-            type: 'section',
-            text: blockBuilder.createTextObjects([`User Configuration: You are using language: `+ language+' with LLM: '+LLM+` .`])[0],
-        };
+        const regenerateButton = ButtonInSectionComponent(
+            {
+                app,
+                buttonText: "Regenerate",
+                style: ButtonStyle.PRIMARY,
+            },
+            {
+                actionId: Modals.REGEN_ACTION,
+                blockId: Modals.REGEN_BLOCK,
+            }
+        );
         const regenerateInput = inputElementComponent(
             {
                 app,
                 placeholder: "Please help me refine the code to make it...",
-                label: "Not satisfied with code result? Refine it with your requirements:",
+                label: "Not satisfied with code result? Refine it with:",
                 optional: false,
                 multiline: true,
                 dispatchActionConfigOnInput: true,
@@ -77,33 +67,31 @@ export async function regenerateCodeModal(
                 blockId: Modals.COMMENT_INPUT_BLOCK,
             }
         );
-        const regenerateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Help me refine it!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
-            }
-        );
-        blocks.push(configureText);
+    
         blocks.push(regenerateInput);
         blocks.push(regenerateButton);
     }
     catch (err) {
         console.log("Error in Gen: "+err);
-        this.app.getLogger().error(err);
+        return this.app.getLogger().error(err);
     }
+
+	const close = elementBuilder.addButton(
+        { text: "close", style: ButtonStyle.DANGER },
+        {
+            actionId: Modals.MAIN_CLOSE_ACTION,
+            blockId: Modals.MAIN_CLOSE_BLOCK,
+        }
+    );
     
 	return {
-        id: viewId || 'modalId',
-        type: UIKitSurfaceType.MODAL,
+        id: viewId || 'contextualbarId',
+        type: UIKitSurfaceType.CONTEXTUAL_BAR,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        close,
     };
 }

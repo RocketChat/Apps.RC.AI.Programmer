@@ -31,12 +31,11 @@ export class ExecuteViewClosedHandler {
 
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                console.log("pressed configure3");
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
-                break;
-            }
-            case Modals.GEN_ACTION: {
+                console.log("pressed close3");
                 break;
             }
         }

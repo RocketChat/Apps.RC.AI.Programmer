@@ -31,12 +31,11 @@ export class ExecuteActionButtonHandler {
 
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                console.log("pressed configure");
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
-                break;
-            }
-            case Modals.GEN_ACTION: {
+                console.log("pressed close");
                 break;
             }
         }
