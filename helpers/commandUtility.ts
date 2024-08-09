@@ -20,7 +20,9 @@ import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } fro
 import { Handler } from "../handlers/Handler";
 import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
-
+import { handleLogin, handleLogout } from "../handlers/GithubHandler";
+import {HandleInvalidRepoName} from "../handlers/HandleInvalidRepoName";
+import { pullRequestListMessage } from "../lib/pullReqeustListMessage";
 
 export class CommandUtility {
     sender: IUser;
@@ -73,6 +75,17 @@ export class CommandUtility {
         } else {
             switch (this.command[0]) {
                 case SubcommandEnum.TEST: {
+                    break;
+                }
+                case SubcommandEnum.GITHUB_LOGIN:{
+                    await handleLogin(
+                        this.app,
+                        this.read,
+                        this.modify,
+                        this.context,
+                        this.room,
+                        this.persistence
+                    );
                     break;
                 }
                 case SubcommandEnum.UI: {
@@ -170,7 +183,37 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
             room: this.room,
             triggerId: this.triggerId,
         });
-        if (param.startsWith('set')){
+        if (param.includes("/")){
+            const repoName = param;
+            const isValidRepoName = await HandleInvalidRepoName(
+                repoName,
+                this.http,
+                this.app,
+                this.modify,
+                this.sender,
+                this.read,
+                this.room
+            );
+            if (isValidRepoName) {
+                switch (query){
+                    case SubcommandEnum.GITHUB_PULL: {
+                        await pullRequestListMessage({ 
+                            repository: repoName, 
+                            room: this.room, 
+                            read: this.read, 
+                            persistence: this.persistence, 
+                            modify: this.modify, 
+                            http: this.http, 
+                            });
+                        break;
+                    }
+                    default:{
+                        break;
+                    }
+                }
+            }
+        }
+        else if (param.startsWith('set')){
             handler.setLanguage(query);
             await sendNotification(
                 this.read,
@@ -190,6 +233,7 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
                 "You have successfully switched LLM to: " + query
             );
         }
+        
     }
 
 
@@ -201,6 +245,7 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
         };
 
     }
+
 
     public async resolveCommand() {
         const handler = new Handler({
