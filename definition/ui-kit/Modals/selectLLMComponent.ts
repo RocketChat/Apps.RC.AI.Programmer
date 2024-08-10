@@ -23,11 +23,9 @@ import {
 } from "@rocket.chat/ui-kit";
 import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder';
 import { AiProgrammerApp } from '../../../AiProgrammerApp';
-import { ButtonInActionComponent } from "./buttonInActionComponent";
-import { ButtonInSectionComponent } from "./buttonInSectionComponent";
 import { Modals } from "../../../enum/Modals";
 
-export async function selectLLMComponent(
+export function selectLLMComponent(
 	app: AiProgrammerApp,
 	user: IUser,
 	read: IRead,
@@ -35,7 +33,7 @@ export async function selectLLMComponent(
 	modify: IModify,
 	room: IRoom,
 	viewId?: string,
-): Promise<InputBlock> {
+): InputBlock{
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const LLMModels = [
         { key: 'llama3-70b', i18nLabel: 'Llama3 70B' },
@@ -47,8 +45,8 @@ export async function selectLLMComponent(
         const text = LLM.i18nLabel;
         const value = LLM.key;
         return {
-            text,
-            value,
+            text: text,
+            value: value,
         };
     });
     const dropDownOption = elementBuilder.createDropDownOptions(options);

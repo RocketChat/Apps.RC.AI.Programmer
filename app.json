@@ -55,6 +55,9 @@
         },
         {
             "name": "ui.interact"
+        },
+        {
+            "name": "scheduler"
         }
     ]
 }

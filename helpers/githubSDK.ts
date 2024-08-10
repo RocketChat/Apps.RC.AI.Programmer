@@ -203,6 +203,45 @@ export async function createNewIssue(
         }
     );
 }
+export async function uploadNewCode(
+    http: IHttp,
+    repoName: string,
+    filePath: string,
+    content: string,
+    commitMessage: string,
+    access_token: string
+) {
+    const response = await http.put(
+        `https://api.github.com/repos/${repoName}/contents/${filePath}`,
+        {
+            headers: {
+                Authorization: `token ${access_token}`,
+                "Content-Type": "application/json",
+            },
+            content: Buffer.from(content).toString('base64'),
+            data: Buffer.from(content).toString('base64'),
+        }
+    );
+    // If it isn't a 2xx code, something wrong happened
+    let JSONResponse = JSON.parse(response.content || "{}");
+    if (!response.statusCode.toString().startsWith("2")) {
+        JSONResponse["serverError"] = true;
+    } else {
+        JSONResponse["serverError"] = false;
+    }
+    console.log("Response after put:"+JSON.stringify(JSONResponse));
+    return JSONResponse;
+    // return postRequest(
+    //     http,
+    //     access_token,
+    //     BaseRepoApiHost + repoName + "/contents/" + filePath,
+    //     {
+    //         message: commitMessage,
+    //         // content: Buffer.from(content).toString('base64')
+    //         content: content
+    //     }
+    // );
+}
 
 export async function getIssueTemplates(
     http: IHttp,

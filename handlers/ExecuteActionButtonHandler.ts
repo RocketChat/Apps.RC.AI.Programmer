@@ -31,12 +31,24 @@ export class ExecuteActionButtonHandler {
 
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                console.log("in action button2");
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
                 break;
             }
             case Modals.GEN_ACTION: {
+                break;
+            }
+            case Modals.CONFIGURE_BLOCK:{
+                console.log("in action button");
+                break;
+            }
+            case Modals.SELECT_LAN_BLOCK:{
+                console.log("action2");
+            }
+            case Modals.SELECT_LAN_ACTION: {
+               console.log("action 1")
                 break;
             }
         }

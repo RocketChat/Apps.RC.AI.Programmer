@@ -47,8 +47,18 @@ export async function shareComponent(
             actionId: Modals.SHARE_BUTTON_ACTION,
         }
     );
+    const buttonGithubElement = elementBuilder.addButton(
+        {
+            text: "Share to Github",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.SHARE_GITHUB_BUTTON_BLOCK,
+            actionId: Modals.SHARE_GITHUB_BUTTON_ACTION,
+        }
+    );
     const actionBlock = blockBuilder.createActionBlock({
-        elements: [buttonElement],
+        elements: [buttonElement, buttonGithubElement],
     });
     const textBlock = blockBuilder.createSectionBlock({
         text: "Want to share your code with other users in channel?",

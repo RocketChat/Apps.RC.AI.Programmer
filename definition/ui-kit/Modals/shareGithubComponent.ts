@@ -27,33 +27,31 @@ import { ButtonInActionComponent } from "./buttonInActionComponent";
 import { ButtonInSectionComponent } from "./buttonInSectionComponent";
 import { Modals } from "../../../enum/Modals";
 
-export async function authenComponent(
+export async function shareGithubComponent(
 	app: AiProgrammerApp,
 	user: IUser,
 	read: IRead,
 	persistence: IPersistence,
 	modify: IModify,
 	room: IRoom,
-    url: string,
 	viewId?: string,
 ): Promise<Array<Block>> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const buttonElement = elementBuilder.addButton(
         {
-            text: "GitHub Login",
+            text: "Share to Github",
             style: ButtonStyle.PRIMARY,
-            url: url,
         },
         {
-            blockId: "Modals.SHARE_BUTTON_BLOCK",
-            actionId: "Modals.SHARE_BUTTON_ACTION",
+            blockId: Modals.SHARE_BUTTON_BLOCK,
+            actionId: Modals.SHARE_BUTTON_ACTION,
         }
     );
     const actionBlock = blockBuilder.createActionBlock({
         elements: [buttonElement],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Login to Github",
+        text: "Want to share your code with other users in channel?",
     });
 
     return [textBlock, actionBlock];

@@ -21,6 +21,9 @@ import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
 import { shareCodeModal } from "../definition/ui-kit/Modals/shareCodeModal";
+import { uploadNewCode } from "../helpers/githubSDK";
+import { getAccessTokenForUser } from '../persistance/auth';
+import { shareGithubModal } from "../definition/ui-kit/Modals/shareGithubModal";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -63,6 +66,7 @@ export class ExecuteBlockActionHandler {
         });
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                 const record = await persis.readByAssociation(association);
@@ -109,24 +113,18 @@ export class ExecuteBlockActionHandler {
                             user
                         );
                     }
+                } else {
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        user,
+                        room,
+                        `Please check your configuration!`
+                    );
                 }
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
-                break;
-            }
-            case Modals.SELECT_LAN_ACTION: {
-                if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
-                    await this.persistence.updateByAssociation(association, { language: value }, true);
-                }
-                break;
-            }
-            case Modals.SELECT_LLM_ACTION: {
-                if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_llm`);
-                    await this.persistence.updateByAssociation(association, { LLM: value }, true);
-                }
                 break;
             }
             case Modals.COMMENT_INPUT_ACTION: {
@@ -150,20 +148,96 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
+            case Modals.SHARE_GITHUB_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_REPO_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_repo_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_repo_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_PATH_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_path_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_path_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_COMMIT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_commit_input: value }, true);
+                }
+                break;
+            }
             case Modals.SHARE_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
-                const share_record = await persis.readByAssociation(association_input);
-                if (share_record) {
-                    let input_str = share_record[0]['share_input'] as string
-                    await sendMessage(
-                            this.modify,
-                            room,
-                            user,
-                            input_str,
-                        );
-                } else {
-                    this.app.getLogger().debug("error: no sharing content");
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                    const share_record = await persis.readByAssociation(association_input);
+                    if (share_record) {
+                        let input_str = share_record[0]['share_input'] as string
+                        await sendMessage(
+                                this.modify,
+                                room,
+                                user,
+                                input_str,
+                            );
+                    } else {
+                        this.app.getLogger().debug("error: no sharing content");
+                    }
+                } catch(err){
+                    console.log("share error:"+err);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_ACTION: {
+                console.log("SHARE_GITHUB_ACTION");
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const share_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`));
+                    const share_repo_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_repo_input`));
+                    const share_path_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_path_input`));
+                    const share_commit_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`));
+                    if (share_record && share_repo_record && share_path_record && share_commit_record) {
+                        let input_str = share_record[0]['share_github_input'] as string
+                        let repo = share_repo_record[0]['share_github_repo_input'] as string
+                        let path = share_path_record[0]['share_github_path_input'] as string
+                        let commit = share_commit_record[0]['share_github_commit_input'] as string
+                        let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
+                        console.log("repo:"+repo);
+                        console.log("path: "+path);
+                        console.log("commit: "+commit);
+                        console.log("accessToken?.token "+accessToken?.token);
+                        if (!accessToken) {
+                            await sendNotification(this.read, this.modify, user, room, "Login To Github!");
+                        } else {
+                            let response = await uploadNewCode(
+                                this.http, repo, path, input_str, commit, accessToken?.token
+                            )
+                            if(response && response?.id){
+                                console.log("get response!")
+                                await sendNotification(this.read,this.modify,user,room, JSON.stringify(response, null, 2));
+                                await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to ${response.html_url}!`);
+                            }else{
+                                console.log("response error");
+                                await sendNotification(this.read,this.modify,user,room,`Invalid Issue!`);
+                            }
+                        }
+                    } else {
+                        console.log("content error!");
+                        await sendNotification(this.read, this.modify, user, room, "You have to enter all information");
+                        this.app.getLogger().debug("error: no sharing content");
+                    }
+                }
+                catch(err){
+                    console.log("Share Github Error: "+JSON.stringify(err));
                 }
                 break;
             }
@@ -296,8 +370,58 @@ export class ExecuteBlockActionHandler {
                     const result_record = await persis.readByAssociation(association);
                     
                     if (result_record) {
-                        let result_str = result_record[0]['result'] as string;
+                        let result_str = "result00";
+                        // let result_str = result_record[0]['result'] as string;
                         const modal = await shareCodeModal(
+                            this.app,
+                            user,
+                            room,
+                            this.read,
+                            this.modify,
+                            this.http,
+                            this.persistence,
+                            result_str,
+                            triggerId
+                        );
+                        if (modal instanceof Error) {
+                            this.app.getLogger().error(modal.message);
+                            break;
+                        }
+                        
+                        if (triggerId) {
+                            await this.modify.getUiController().openSurfaceView(
+                                modal,
+                                {
+                                    triggerId,
+                                },
+                                user
+                            );
+                        }
+                    } else {
+                        this.app.getLogger().debug("error: no share content");
+                    }
+                }
+                catch (err) {
+                    console.log("Error in when render share modal: "+err);
+                    this.app.getLogger().error(err);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_BUTTON_ACTION: {
+                if (!room) {
+                    this.app.getLogger().error("Room is not specified!");
+                    break;
+                }
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
+                    const result_record = await persis.readByAssociation(association);
+                    
+                    if (result_record) {
+                        
+                        // let result_str = result_record[0]['result'] as string;
+                        let result_str = "result";
+                        const modal = await shareGithubModal(
                             this.app,
                             user,
                             room,

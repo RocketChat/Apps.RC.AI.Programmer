@@ -9,6 +9,7 @@ import { AiProgrammerApp } from "../AiProgrammerApp";
 import { sendNotification } from "../helpers/message";
 import { authenComponent } from "../definition/ui-kit/Modals/authenComponent"
 
+
 export async function authorize(
     app: AiProgrammerApp,
     read: IRead,
@@ -27,6 +28,8 @@ export async function authorize(
         read,
         persistence,
         modify,
-        room);
+        room,
+        url.toString());
+        
     await sendNotification(read, modify, user, room, undefined, authen_block);
 }

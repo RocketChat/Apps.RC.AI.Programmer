@@ -19,6 +19,7 @@ import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeM
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { Handler } from "../handlers/Handler";
 import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
+import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { handleLogin, handleLogout } from "../handlers/GithubHandler";
 import {HandleInvalidRepoName} from "../handlers/HandleInvalidRepoName";
@@ -75,6 +76,34 @@ export class CommandUtility {
         } else {
             switch (this.command[0]) {
                 case SubcommandEnum.TEST: {
+                    const regen_block = await regenerationComponent(this.app,
+                        this.sender,
+                        this.read,
+                        this.persistence,
+                        this.modify,
+                        this.room);
+                    const share_block = await shareComponent(this.app,
+                        this.sender,
+                        this.read,
+                        this.persistence,
+                        this.modify,
+                        this.room);
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        this.sender,
+                        this.room,
+                        undefined,
+                        regen_block,
+                    );
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        this.sender,
+                        this.room,
+                        undefined,
+                        share_block,
+                    );
                     break;
                 }
                 case SubcommandEnum.GITHUB_LOGIN:{
@@ -105,13 +134,6 @@ export class CommandUtility {
                     const triggerId = this.triggerId;
                     if (triggerId) {
                         await this.modify.getUiController().openSurfaceView(
-                            contextualBar,
-                            {
-                                triggerId,
-                            },
-                            this.sender
-                        );
-                        await this.modify.getUiController().updateSurfaceView(
                             contextualBar,
                             {
                                 triggerId,
@@ -284,13 +306,6 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
                     const triggerId = this.triggerId;
                     if (triggerId) {
                         await this.modify.getUiController().openSurfaceView(
-                            contextualBar,
-                            {
-                                triggerId,
-                            },
-                            this.sender
-                        );
-                        await this.modify.getUiController().updateSurfaceView(
                             contextualBar,
                             {
                                 triggerId,

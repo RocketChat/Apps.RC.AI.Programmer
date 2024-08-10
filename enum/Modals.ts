@@ -36,10 +36,22 @@ export enum Modals {
     GEN_BUTTON_ACTION = "gen-button-action",
     SHARE_BUTTON_BLOCK = "share-button-block",
     SHARE_BUTTON_ACTION = "share-button-action",
+    SHARE_GITHUB_BUTTON_BLOCK = "share-github-button-block",
+    SHARE_GITHUB_BUTTON_ACTION = "share-github-button-action",
     SHARE_INPUT_BLOCK = "share-input-block",
     SHARE_INPUT_ACTION = "share-input-action",
     SHARE_BLOCK = "share-block",
-    SHARE_ACTION = "share-action"
+    SHARE_ACTION = "share-action",
+    SHARE_GITHUB_INPUT_BLOCK = "share-github-input-block",
+    SHARE_GITHUB_INPUT_ACTION = "share-github-input-action",
+    SHARE_GITHUB_REPO_INPUT_BLOCK = "share-github-repo-input-block",
+    SHARE_GITHUB_REPO_INPUT_ACTION = "share-github-repo-input-action",
+    SHARE_GITHUB_PATH_INPUT_BLOCK = "share-github-path-input-block",
+    SHARE_GITHUB_PATH_INPUT_ACTION = "share-github-path-input-action",
+    SHARE_GITHUB_COMMIT_INPUT_BLOCK = "share-github-commit-input-block",
+    SHARE_GITHUB_COMMIT_INPUT_ACTION = "share-github-commit-input-action",
+    SHARE_GITHUB_BLOCK = "share-github-block",
+    SHARE_GITHUB_ACTION = "share-github-action",
 }
 export enum ModalsEnum {
     ADD_GITHUB_ISSUE_ASSIGNEE_PROFILE = 'add-github-issue-assignee-profile',
