@@ -116,6 +116,19 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
+            case 'generateModal':{
+                const persis = this.read.getPersistenceReader();
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
+                const gen_record = await persis.readByAssociation(association_input);
+                if (gen_record) {
+                    let input_str = gen_record[0]['gen_input'] as string
+                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
+                    handler.generateCodeFromParam(input_str);
+                } else {
+                    this.app.getLogger().debug("error: no gen command");
+                }
+                break;
+            }
         }
 
         return this.context.getInteractionResponder().successResponse();

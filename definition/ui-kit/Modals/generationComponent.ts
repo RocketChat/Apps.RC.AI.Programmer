@@ -51,7 +51,7 @@ export async function generationComponent(
         elements: [buttonElement],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Start to generate your code",
+        text: "Start to generate your code now!",
     });
 
     return [textBlock, actionBlock];

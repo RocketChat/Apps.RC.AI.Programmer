@@ -96,6 +96,21 @@ export async function shareGithubModal(
                 blockId: Modals.SHARE_GITHUB_PATH_INPUT_BLOCK,
             }
         );
+        const branchInput = inputElementComponent(
+            {
+                app,
+                placeholder: "main",
+                label: "Enter the branch you want to upload your code in:",
+                optional: false,
+                multiline: true,
+                dispatchActionConfigOnInput: true,
+                initialValue: "",
+            },
+            {
+                actionId: Modals.SHARE_GITHUB_BRANCH_INPUT_ACTION,
+                blockId: Modals.SHARE_GITHUB_BRANCH_INPUT_BLOCK,
+            }
+        );
         const commitInput = inputElementComponent(
             {
                 app,
@@ -140,6 +155,7 @@ export async function shareGithubModal(
         blocks.push(configureText);
         blocks.push(repoInput);
         blocks.push(pathInput);
+        blocks.push(branchInput);
         blocks.push(commitInput);
         blocks.push(generateInput);
         blocks.push(generateButton);

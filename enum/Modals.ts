@@ -50,6 +50,8 @@ export enum Modals {
     SHARE_GITHUB_PATH_INPUT_ACTION = "share-github-path-input-action",
     SHARE_GITHUB_COMMIT_INPUT_BLOCK = "share-github-commit-input-block",
     SHARE_GITHUB_COMMIT_INPUT_ACTION = "share-github-commit-input-action",
+    SHARE_GITHUB_BRANCH_INPUT_BLOCK = "share-github-branch-input-block",
+    SHARE_GITHUB_BRANCH_INPUT_ACTION = "share-github-branch-input-action",
     SHARE_GITHUB_BLOCK = "share-github-block",
     SHARE_GITHUB_ACTION = "share-github-action",
 }

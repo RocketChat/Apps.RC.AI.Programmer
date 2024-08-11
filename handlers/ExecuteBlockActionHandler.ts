@@ -169,6 +169,13 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
+            case Modals.SHARE_GITHUB_BRANCH_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_branch_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_branch_input: value }, true);
+                }
+                break;
+            }
             case Modals.SHARE_GITHUB_COMMIT_INPUT_ACTION: {
                 if (value) {
                     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`);
@@ -205,27 +212,26 @@ export class ExecuteBlockActionHandler {
                     const share_repo_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_repo_input`));
                     const share_path_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_path_input`));
                     const share_commit_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`));
+                    const share_branch_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_branch_input`));
                     if (share_record && share_repo_record && share_path_record && share_commit_record) {
                         let input_str = share_record[0]['share_github_input'] as string
                         let repo = share_repo_record[0]['share_github_repo_input'] as string
                         let path = share_path_record[0]['share_github_path_input'] as string
                         let commit = share_commit_record[0]['share_github_commit_input'] as string
+                        let branch = share_branch_record[0]['share_github_branch_input'] as string
                         let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
-                        console.log("repo:"+repo);
-                        console.log("path: "+path);
-                        console.log("commit: "+commit);
-                        console.log("accessToken?.token "+accessToken?.token);
+                        
                         if (!accessToken) {
                             await sendNotification(this.read, this.modify, user, room, "Please first login To Github!");
                         } else {
-                            let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token);
+                            let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token, branch);
                             
                             if (getresponse && !getresponse?.serverError) {
                                 console.log("File Exists!");
                                 await sendNotification(this.read,this.modify,user,room,`File exists, current content will be overwritten!`);
                                 console.log("Inside get sha: "+getresponse.sha)
                                 let response = await uploadNewCode(
-                                    this.http, repo, path, input_str, commit, accessToken?.token, getresponse.sha
+                                    this.http, repo, path, input_str, commit, accessToken?.token, branch, getresponse.sha
                                 )
                                 if(response && !response?.serverError){
                                     await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
@@ -236,7 +242,7 @@ export class ExecuteBlockActionHandler {
                             else {
                                 console.log("File not exist, create new one")
                                 let response = await uploadNewCode(
-                                    this.http, repo, path, input_str, commit, accessToken?.token
+                                    this.http, repo, path, input_str, commit, accessToken?.token, branch
                                 )
                                 if(response && !response?.serverError){
                                     await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
@@ -384,8 +390,8 @@ export class ExecuteBlockActionHandler {
                     const result_record = await persis.readByAssociation(association);
                     
                     if (result_record) {
-                        let result_str = "result00";
-                        // let result_str = result_record[0]['result'] as string;
+                        // let result_str = "result00";
+                        let result_str = result_record[0]['result'] as string;
                         const modal = await shareCodeModal(
                             this.app,
                             user,
@@ -433,8 +439,8 @@ export class ExecuteBlockActionHandler {
                     
                     if (result_record) {
                         
-                        // let result_str = result_record[0]['result'] as string;
-                        let result_str = "result";
+                        let result_str = result_record[0]['result'] as string;
+                        // let result_str = "result";
                         const modal = await shareGithubModal(
                             this.app,
                             user,

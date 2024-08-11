@@ -84,8 +84,8 @@ export async function regenerateCodeModal(
                 style: ButtonStyle.PRIMARY,
             },
             {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
+                actionId: Modals.REGEN_ACTION,
+                blockId: Modals.REGEN_BLOCK,
             }
         );
         blocks.push(configureText);

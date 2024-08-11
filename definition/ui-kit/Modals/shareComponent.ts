@@ -37,9 +37,19 @@ export async function shareComponent(
 	viewId?: string,
 ): Promise<Array<Block>> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
+    const refineButton = elementBuilder.addButton(
+        {
+            text: "Refine the code",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.REGEN_BUTTON_BLOCK,
+            actionId: Modals.REGEN_BUTTON_ACTION,
+        }
+    );
     const buttonElement = elementBuilder.addButton(
         {
-            text: "Share your code",
+            text: "Share in channel",
             style: ButtonStyle.PRIMARY,
         },
         {
@@ -57,11 +67,21 @@ export async function shareComponent(
             actionId: Modals.SHARE_GITHUB_BUTTON_ACTION,
         }
     );
+    const genButton = elementBuilder.addButton(
+        {
+            text: "Genereate new code",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.GEN_BUTTON_BLOCK,
+            actionId: Modals.GEN_BUTTON_ACTION,
+        }
+    );
     const actionBlock = blockBuilder.createActionBlock({
-        elements: [buttonElement, buttonGithubElement],
+        elements: [refineButton, buttonElement, buttonGithubElement, genButton],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Want to share your code with other users in channel?",
+        text: "You have successfully generated code! Choose your next action:",
     });
 
     return [textBlock, actionBlock];

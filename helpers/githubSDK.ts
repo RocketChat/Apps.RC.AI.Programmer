@@ -209,13 +209,14 @@ export async function getNewCode(
     filePath: string,
     content: string,
     commitMessage: string,
-    access_token: string
+    access_token: string,
+    branch?: string,
 ) {
     const base64Content = Buffer.from(content).toString('base64');
     const payload = {
         message: commitMessage,
         content: base64Content,
-        branch: 'master'
+        branch: branch
       };
     const response = await http.get(
         `https://api.github.com/repos/${repoName}/contents/${filePath}`,
@@ -247,13 +248,14 @@ export async function uploadNewCode(
     content: string,
     commitMessage: string,
     access_token: string,
+    branch?: string,
     sha?: string
 ) {
     const base64Content = Buffer.from(content).toString('base64');
     const payload = {
         message: commitMessage,
         content: base64Content,
-        branch: 'master'
+        branch: branch
       };
     if (sha) payload["sha"] = sha;
     console.log("The json to put: "+JSON.stringify(payload));

@@ -102,7 +102,7 @@ export async function generateCodeModal(
 
     
 	return {
-        id: viewId || 'modalId',
+        id: 'generateModal',
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
