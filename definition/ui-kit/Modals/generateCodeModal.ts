@@ -93,13 +93,13 @@ export async function generateCodeModal(
         );
         blocks.push(configureText);
         blocks.push(generateInput);
-        blocks.push(generateButton)
+        // blocks.push(generateButton)
     }
     catch (err) {
         console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
-
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
         id: 'generateModal',
@@ -109,5 +109,9 @@ export async function generateCodeModal(
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "submit",
+            text: block.newPlainTextObject("Generate code"),
+        }),
     };
 }

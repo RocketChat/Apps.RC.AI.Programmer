@@ -39,7 +39,7 @@ export async function generationComponent(
 	const { elementBuilder, blockBuilder } = app.getUtils();
     const buttonElement = elementBuilder.addButton(
         {
-            text: "Generate code now!",
+            text: "Generate new code",
             style: ButtonStyle.PRIMARY,
         },
         {

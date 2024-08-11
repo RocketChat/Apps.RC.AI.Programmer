@@ -261,36 +261,6 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
-            case Modals.GEN_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
-                const gen_record = await persis.readByAssociation(association_input);
-                if (gen_record) {
-                    let input_str = gen_record[0]['gen_input'] as string
-                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
-                    handler.generateCodeFromParam(input_str);
-                } else {
-                    this.app.getLogger().debug("error: no gen command");
-                }
-                break;
-            }
-            case Modals.REGEN_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
-                const result_record = await persis.readByAssociation(association);
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
-                const regen_record = await persis.readByAssociation(association_input);
-                if (result_record && regen_record) {
-                    let result_str = result_record[0]['result'] as string
-                    result_str = result_str.substring(0,Math.min(3000, result_str.length))
-                    let input_str = regen_record[0]['regen_input'] as string
-                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
-                    handler.regenerateCodeFromResult(result_str, input_str);
-                } else {
-                    this.app.getLogger().debug("error: no result/regen command");
-                }
-                break;
-            }
             case Modals.REGEN_BUTTON_ACTION: {
                 if (!room) {
                     this.app.getLogger().error("Room is not specified!");
@@ -390,7 +360,6 @@ export class ExecuteBlockActionHandler {
                     const result_record = await persis.readByAssociation(association);
                     
                     if (result_record) {
-                        // let result_str = "result00";
                         let result_str = result_record[0]['result'] as string;
                         const modal = await shareCodeModal(
                             this.app,
@@ -440,7 +409,14 @@ export class ExecuteBlockActionHandler {
                     if (result_record) {
                         
                         let result_str = result_record[0]['result'] as string;
-                        // let result_str = "result";
+                        const trimmed = result_str.trim();
+    
+                        // Check if the string starts and ends with triple backticks
+                        if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
+                            // Remove the first and last lines (which contain the backticks)
+                            const lines = trimmed.split('\n');
+                            result_str = lines.slice(1, -1).join('\n').trim();
+                        }
                         const modal = await shareGithubModal(
                             this.app,
                             user,

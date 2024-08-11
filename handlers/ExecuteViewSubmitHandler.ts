@@ -55,22 +55,7 @@ export class ExecuteViewSubmitHandler {
             room,
             triggerId,
         });
-        switch (actionId) {
-            case Modals.CONFIGURE_ACTION: {
-                console.log("pressed configure4");
-                break;
-            }
-            case Modals.MAIN_CLOSE_ACTION: {
-                console.log("pressed close4");
-                break;
-            }
-            case Modals.GEN_ACTION: {
-                console.log("gen_action view submit");
-                break;
-            }
-            
-        }
-
+    
         switch (view.id) {
             case "mainContextualBar": {
                 console.log("submit handling main context -->");
@@ -126,6 +111,23 @@ export class ExecuteViewSubmitHandler {
                     handler.generateCodeFromParam(input_str);
                 } else {
                     this.app.getLogger().debug("error: no gen command");
+                }
+                break;
+            }
+            case 'regenModal': {
+                const persis = this.read.getPersistenceReader();
+                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
+                const result_record = await persis.readByAssociation(association);
+                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
+                const regen_record = await persis.readByAssociation(association_input);
+                if (result_record && regen_record) {
+                    let result_str = result_record[0]['result'] as string
+                    result_str = result_str.substring(0,Math.min(3000, result_str.length))
+                    let input_str = regen_record[0]['regen_input'] as string
+                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
+                    handler.regenerateCodeFromResult(result_str, input_str);
+                } else {
+                    this.app.getLogger().debug("error: no result/regen command");
                 }
                 break;
             }

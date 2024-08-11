@@ -69,7 +69,7 @@ export async function shareComponent(
     );
     const genButton = elementBuilder.addButton(
         {
-            text: "Genereate new code",
+            text: "Generate new code",
             style: ButtonStyle.PRIMARY,
         },
         {
@@ -81,7 +81,13 @@ export async function shareComponent(
         elements: [refineButton, buttonElement, buttonGithubElement, genButton],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "You have successfully generated code! Choose your next action:",
+        text: `Congratulations! You have successfully generated code! You can choose from the following actions:`,
+    });
+    const actionBlock2 = blockBuilder.createActionBlock({
+        elements: [genButton],
+    });
+    const textBlock2 = blockBuilder.createSectionBlock({
+        text: "You can also generate new code or change configuration:",
     });
 
     return [textBlock, actionBlock];

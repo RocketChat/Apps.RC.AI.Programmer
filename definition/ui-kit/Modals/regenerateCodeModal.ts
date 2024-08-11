@@ -90,20 +90,25 @@ export async function regenerateCodeModal(
         );
         blocks.push(configureText);
         blocks.push(regenerateInput);
-        blocks.push(regenerateButton);
+        // blocks.push(regenerateButton);
     }
     catch (err) {
         console.log("Error in Gen: "+err);
         this.app.getLogger().error(err);
     }
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: viewId || 'modalId',
+        id: 'regenModal',
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "submit",
+            text: block.newPlainTextObject("Refine the code"),
+        }),
     };
 }
