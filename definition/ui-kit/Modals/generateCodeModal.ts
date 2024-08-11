@@ -110,7 +110,7 @@ export async function generateCodeModal(
         },
         blocks,
         submit: block.newButtonElement({
-            actionId: "submit",
+            actionId: "generateModal",
             text: block.newPlainTextObject("Generate code"),
         }),
     };

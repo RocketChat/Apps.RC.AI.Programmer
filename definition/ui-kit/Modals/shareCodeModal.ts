@@ -94,21 +94,25 @@ export async function shareCodeModal(
         );
         blocks.push(configureText);
         blocks.push(generateInput);
-        blocks.push(generateButton)
+        // blocks.push(generateButton)
     }
     catch (err) {
         console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
-
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: viewId || 'modalId',
+        id: 'shareInChannel',
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "shareInChannel",
+            text: block.newPlainTextObject("Share in the channel"),
+        }),
     };
 }

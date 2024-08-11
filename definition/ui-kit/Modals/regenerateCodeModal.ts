@@ -107,7 +107,7 @@ export async function regenerateCodeModal(
         },
         blocks,
         submit: block.newButtonElement({
-            actionId: "submit",
+            actionId: "regenModal",
             text: block.newPlainTextObject("Refine the code"),
         }),
     };

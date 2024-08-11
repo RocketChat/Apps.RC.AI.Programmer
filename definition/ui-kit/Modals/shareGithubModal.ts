@@ -158,21 +158,26 @@ export async function shareGithubModal(
         blocks.push(branchInput);
         blocks.push(commitInput);
         blocks.push(generateInput);
-        blocks.push(generateButton);
+        // blocks.push(generateButton);
     }
     catch (err) {
         console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
 
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: viewId || 'modalId',
+        id: 'shareGithub',
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "shareGithub",
+            text: block.newPlainTextObject("Share to the Github"),
+        }),
     };
 }

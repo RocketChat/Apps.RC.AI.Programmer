@@ -16,6 +16,8 @@ import { sendNotification, sendMessage } from "../helpers/message";
 import { Handler } from "./Handler";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generationComponent } from "../definition/ui-kit/Modals/generationComponent";
+import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
+import { getAccessTokenForUser } from '../persistance/auth';
 
 export class ExecuteViewSubmitHandler {
     private context:  UIKitViewSubmitInteractionContext;
@@ -73,7 +75,7 @@ export class ExecuteViewSubmitHandler {
                         this.modify,
                         user,
                         room,
-                        `You have successfully configured language: `+lan +' with LLM: '+llm+` for code generation!`
+                        `You have successfully configured programming language: `+lan +' with LLM: '+llm+`!`
                     );
                     const gen_block = await generationComponent(this.app,
                         user,
@@ -115,6 +117,7 @@ export class ExecuteViewSubmitHandler {
                 break;
             }
             case 'regenModal': {
+                console.log("regenModal");
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
                 const result_record = await persis.readByAssociation(association);
@@ -128,6 +131,83 @@ export class ExecuteViewSubmitHandler {
                     handler.regenerateCodeFromResult(result_str, input_str);
                 } else {
                     this.app.getLogger().debug("error: no result/regen command");
+                }
+                break;
+            }
+            case 'shareInChannel':{
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                    const share_record = await persis.readByAssociation(association_input);
+                    if (share_record) {
+                        let input_str = share_record[0]['share_input'] as string
+                        await sendMessage(
+                                this.modify,
+                                room,
+                                user,
+                                input_str,
+                            );
+                    } else {
+                        this.app.getLogger().debug("error: no sharing content");
+                    }
+                } catch(err){
+                    console.log("share error:"+err);
+                }
+                break;
+            }
+            case 'shareGithub':{
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const share_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`));
+                    const share_repo_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_repo_input`));
+                    const share_path_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_path_input`));
+                    const share_commit_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`));
+                    const share_branch_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_branch_input`));
+                    if (share_record && share_repo_record && share_path_record && share_commit_record) {
+                        let input_str = share_record[0]['share_github_input'] as string
+                        let repo = share_repo_record[0]['share_github_repo_input'] as string
+                        let path = share_path_record[0]['share_github_path_input'] as string
+                        let commit = share_commit_record[0]['share_github_commit_input'] as string
+                        let branch = share_branch_record[0]['share_github_branch_input'] as string
+                        let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
+                        
+                        if (!accessToken) {
+                            await sendNotification(this.read, this.modify, user, room, "Please first login To Github!");
+                        } else {
+                            let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token, branch);
+                            
+                            if (getresponse && !getresponse?.serverError) {
+                                console.log("File Exists!");
+                                await sendNotification(this.read,this.modify,user,room,`File exists, current content will be overwritten!`);
+                                console.log("Inside get sha: "+getresponse.sha)
+                                let response = await uploadNewCode(
+                                    this.http, repo, path, input_str, commit, accessToken?.token, branch, getresponse.sha
+                                )
+                                if(response && !response?.serverError){
+                                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
+                                }else{
+                                    await sendNotification(this.read,this.modify,user,room,`Sharing to Github failed!`);
+                                }
+                            }
+                            else {
+                                console.log("File not exist, create new one")
+                                let response = await uploadNewCode(
+                                    this.http, repo, path, input_str, commit, accessToken?.token, branch
+                                )
+                                if(response && !response?.serverError){
+                                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
+                                }else{
+                                    await sendNotification(this.read,this.modify,user,room,`Sharing to Github failed!`);
+                                }
+                            }
+                            
+                        }
+                    } else {
+                        await sendNotification(this.read, this.modify, user, room, "You have to enter all information!");
+                    }
+                }
+                catch(err){
+                    console.log("Share Github Error: "+JSON.stringify(err));
                 }
                 break;
             }
