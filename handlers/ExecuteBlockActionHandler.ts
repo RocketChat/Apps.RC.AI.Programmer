@@ -21,7 +21,7 @@ import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
 import { shareCodeModal } from "../definition/ui-kit/Modals/shareCodeModal";
-import { uploadNewCode } from "../helpers/githubSDK";
+import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
 import { getAccessTokenForUser } from '../persistance/auth';
 import { shareGithubModal } from "../definition/ui-kit/Modals/shareGithubModal";
 
@@ -216,24 +216,38 @@ export class ExecuteBlockActionHandler {
                         console.log("commit: "+commit);
                         console.log("accessToken?.token "+accessToken?.token);
                         if (!accessToken) {
-                            await sendNotification(this.read, this.modify, user, room, "Login To Github!");
+                            await sendNotification(this.read, this.modify, user, room, "Please first login To Github!");
                         } else {
-                            let response = await uploadNewCode(
-                                this.http, repo, path, input_str, commit, accessToken?.token
-                            )
-                            if(response && response?.id){
-                                console.log("get response!")
-                                await sendNotification(this.read,this.modify,user,room, JSON.stringify(response, null, 2));
-                                await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to ${response.html_url}!`);
-                            }else{
-                                console.log("response error");
-                                await sendNotification(this.read,this.modify,user,room,`Invalid Issue!`);
+                            let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token);
+                            
+                            if (getresponse && !getresponse?.serverError) {
+                                console.log("File Exists!");
+                                await sendNotification(this.read,this.modify,user,room,`File exists, current content will be overwritten!`);
+                                console.log("Inside get sha: "+getresponse.sha)
+                                let response = await uploadNewCode(
+                                    this.http, repo, path, input_str, commit, accessToken?.token, getresponse.sha
+                                )
+                                if(response && !response?.serverError){
+                                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
+                                }else{
+                                    await sendNotification(this.read,this.modify,user,room,`Sharing to Github failed!`);
+                                }
                             }
+                            else {
+                                console.log("File not exist, create new one")
+                                let response = await uploadNewCode(
+                                    this.http, repo, path, input_str, commit, accessToken?.token
+                                )
+                                if(response && !response?.serverError){
+                                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Github!`);
+                                }else{
+                                    await sendNotification(this.read,this.modify,user,room,`Sharing to Github failed!`);
+                                }
+                            }
+                            
                         }
                     } else {
-                        console.log("content error!");
-                        await sendNotification(this.read, this.modify, user, room, "You have to enter all information");
-                        this.app.getLogger().debug("error: no sharing content");
+                        await sendNotification(this.read, this.modify, user, room, "You have to enter all information!");
                     }
                 }
                 catch(err){
