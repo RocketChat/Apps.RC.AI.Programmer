@@ -18,6 +18,7 @@ import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generationComponent } from "../definition/ui-kit/Modals/generationComponent";
 import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
 import { getAccessTokenForUser } from '../persistance/auth';
+import { handleLogin, handleLogout } from "../handlers/GithubHandler";
 
 export class ExecuteViewSubmitHandler {
     private context:  UIKitViewSubmitInteractionContext;
@@ -172,7 +173,7 @@ export class ExecuteViewSubmitHandler {
                         let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
                         
                         if (!accessToken) {
-                            await sendNotification(this.read, this.modify, user, room, "Please first login To Github!");
+                            await sendNotification(this.read, this.modify, user, room, "Please make sure your OAuth2 settings are ready and logged into Github using  \`/ai-programmer login \` !");
                         } else {
                             let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token, branch);
                             

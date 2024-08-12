@@ -29,7 +29,8 @@ export async function helperMessage({
     3. Switch to the LLM you want to use to generate code -> \`/ai-programmer llm llama3-70b\`
     4. List the available LLM options -> \`/ai-programmer list \`
     5. Use the interactive user interface to handle your operations -> \`/ai-programmer ui \`
-    6. Login to Github (You should set OAuth2 configurations first!) -> \`/ai-programmer github_login \`.
+    6. Login to Github (You should set OAuth2 settings first!) -> \`/ai-programmer login \`.
+    7. Logout to Github -> \`/ai-programmer logout \`.
     `;
 
     const textSender = await modify

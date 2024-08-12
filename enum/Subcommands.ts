@@ -1,9 +1,5 @@
 export enum SubcommandEnum {
-	LOGIN = 'login',
-    LOGOUT = 'logout',
     HELP = 'help',
-    SUBSCRIBE = 'subscribe',
-    UNSUBSCRIBE = 'unsubscribe',
     TEST = 'test',
     UI = 'ui',
     SEARCH = 'search',
@@ -13,7 +9,8 @@ export enum SubcommandEnum {
     CREATE= 'create',
     LIST ='list',
     REGEN = 'regen',
-    GITHUB_LOGIN = 'github_login',
+    GITHUB_LOGIN = 'login',
+    GITHUB_LOGOUT = 'logout',
     GITHUB_UPLOAD = 'github_upload',
     GITHUB_PULL = 'github_pull',
 }

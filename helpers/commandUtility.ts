@@ -18,7 +18,6 @@ import { createMainContextualBar } from "../definition/ui-kit/Modals/createMainC
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
 import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 import { Handler } from "../handlers/Handler";
-import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
 import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { handleLogin, handleLogout } from "../handlers/GithubHandler";
@@ -76,34 +75,6 @@ export class CommandUtility {
         } else {
             switch (this.command[0]) {
                 case SubcommandEnum.TEST: {
-                    const regen_block = await regenerationComponent(this.app,
-                        this.sender,
-                        this.read,
-                        this.persistence,
-                        this.modify,
-                        this.room);
-                    const share_block = await shareComponent(this.app,
-                        this.sender,
-                        this.read,
-                        this.persistence,
-                        this.modify,
-                        this.room);
-                    await sendNotification(
-                        this.read,
-                        this.modify,
-                        this.sender,
-                        this.room,
-                        undefined,
-                        regen_block,
-                    );
-                    await sendNotification(
-                        this.read,
-                        this.modify,
-                        this.sender,
-                        this.room,
-                        undefined,
-                        share_block,
-                    );
                     break;
                 }
                 case SubcommandEnum.GITHUB_LOGIN:{
@@ -114,6 +85,19 @@ export class CommandUtility {
                         this.context,
                         this.room,
                         this.persistence
+                    );
+                    break;
+                }
+                case SubcommandEnum.GITHUB_LOGOUT:{
+                    await handleLogout(
+                        this.app,
+                        this.read,
+                        this.modify,
+                        this.context,
+                        this.room,
+                        this.persistence,
+                        this.sender,
+                        this.http
                     );
                     break;
                 }
@@ -150,30 +134,13 @@ export class CommandUtility {
                         this.sender,
                         this.room,
                         ` 
-                        * According to the regulation fo RC community, you can choose from the following LLMs: *
+                        * According to the regulation fo RC community, you can choose from the following open-source LLMs: *
 1. mistral-7b
 2. llama3-70b
 3. codellama-7b
 4. codestral-22b
 Please use the direct name of LLM as above in the command \`/ai-programmer llm xxx\` to switch to that LLM.
     `
-                    );
-                    break;
-                }
-                case SubcommandEnum.REGEN: {
-                    const regen_block = await regenerationComponent(this.app,
-                        this.sender,
-                        this.read,
-                        this.persistence,
-                        this.modify,
-                        this.room);
-                    await sendNotification(
-                        this.read,
-                        this.modify,
-                        this.sender,
-                        this.room,
-                        undefined,
-                        regen_block,
                     );
                     break;
                 }
