@@ -82,7 +82,7 @@ export async function generateCodeModal(
         blocks.push(generateInput);
     }
     catch (err) {
-        console.log("Error in code modal: "+err);
+        
         this.app.getLogger().error(err);
     }
     const block = modify.getCreator().getBlockBuilder();

@@ -46,9 +46,9 @@ export class Handler {
         try {
             await this.persistence.updateByAssociation(association, { language: query }, true);
             const record = await persis.readByAssociation(association);
-            console.log("Successfully set language: " + record[0]['language']);
+            
         } catch (err) {
-            console.log("Error: "+err);
+            
             return this.app.getLogger().error(err);
         }
     }
@@ -59,9 +59,9 @@ export class Handler {
         try {
             await this.persistence.updateByAssociation(association, { LLM: query }, true);
             const record = await persis.readByAssociation(association);
-            console.log("Successfully set LLM: " + record[0]['LLM']);
+            
         } catch (err) {
-            console.log("Error: "+err);
+            
             return this.app.getLogger().error(err);
         }
     }
@@ -75,12 +75,12 @@ export class Handler {
                 this.language = record[0]['language'] as string;
             }
             else {
-                console.log("Read language Fail!");
+                
                 this.language = 'Python';
             }
         }
         catch (err) {
-            console.log("Error read languange: "+err); 
+            
         }
         return this.language;
     }
@@ -94,12 +94,12 @@ export class Handler {
                 this.LLM = LLMrecord[0]['LLM'] as string;
             }
             else {
-                console.log("Read LLM Fail!");
+                
                 this.LLM = 'mistral-7b';
             }
         }
         catch (err) {
-            console.log("Error read LLM: "+err); 
+            
         }
         return this.LLM;
     }
@@ -111,7 +111,7 @@ export class Handler {
             this.LLM = await this.getLLM();
         }
         catch (err) {
-            console.log("Error in getting language and llm: "+err);
+            
             return this.app.getLogger().error(err);
         }
         await sendNotification(
@@ -158,7 +158,7 @@ export class Handler {
             this.LLM = await this.getLLM();
         }
         catch (err) {
-            console.log("Error in getting language and llm: "+err);
+            
             return this.app.getLogger().error(err);
         }
         await sendNotification(

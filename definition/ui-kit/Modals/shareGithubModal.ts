@@ -147,7 +147,7 @@ export async function shareGithubModal(
         blocks.push(generateInput);
     }
     catch (err) {
-        console.log("Error in code modal: "+err);
+        
         this.app.getLogger().error(err);
     }
 

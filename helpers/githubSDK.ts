@@ -120,14 +120,14 @@ export async function getNewCode(
         }
     );
     // If it isn't a 2xx code, something wrong happened
-    console.log("response statuscode: "+ response.statusCode)
+    
     let JSONResponse = JSON.parse(response.content || "{}");
     if (!response.statusCode.toString().startsWith("2")) {
         JSONResponse["serverError"] = true;
     } else {
         JSONResponse["serverError"] = false;
     }
-    console.log("Response after get:"+JSON.stringify(JSONResponse));
+    
     return JSONResponse;
 }
 export async function uploadNewCode(
@@ -147,7 +147,7 @@ export async function uploadNewCode(
         branch: branch
       };
     if (sha) payload["sha"] = sha;
-    console.log("The json to put: "+JSON.stringify(payload));
+    
     const response = await http.put(
         `https://api.github.com/repos/${repoName}/contents/${filePath}`,
         {
@@ -160,14 +160,14 @@ export async function uploadNewCode(
         }
     );
     // If it isn't a 2xx code, something wrong happened
-    console.log("response statuscode: "+ response.statusCode)
+    
     let JSONResponse = JSON.parse(response.content || "{}");
     if (!response.statusCode.toString().startsWith("2")) {
         JSONResponse["serverError"] = true;
     } else {
         JSONResponse["serverError"] = false;
     }
-    console.log("Response after put:"+JSON.stringify(JSONResponse));
+    
     return JSONResponse;
 }
 

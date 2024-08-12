@@ -53,7 +53,7 @@ export class ExecuteBlockActionHandler {
         const roomId = result.roomId;
         const room = (await this.read.getRoomReader().getById(roomId)) as IRoom;
         if (!room) return this.context.getInteractionResponder().errorResponse();
-        console.log("handleAction(): room ->" + room.id + " roomId: " + roomId);
+        
         const handler = new Handler({
             app: this.app,
             read: this.read,
@@ -215,7 +215,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render regen modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;
@@ -266,7 +266,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render gen modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;
@@ -313,7 +313,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render share modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;
@@ -369,7 +369,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render share modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;

@@ -84,7 +84,7 @@ export async function revokeUserAccessToken(
         await removeToken({ userId: user.id, persis, config });
         return true;
     } catch (error) {
-        console.log("revokeTokenError : ", error);
+        
         return false;
     }
 }

@@ -61,7 +61,7 @@ export class ExecuteViewSubmitHandler {
     
         switch (view.id) {
             case "mainContextualBar": {
-                console.log("submit handling main context -->");
+                
                 let lan: string|undefined = view.state?.[Modals.SELECT_LAN_BLOCK]?.[Modals.SELECT_LAN_ACTION];
                 let llm: string|undefined = view.state?.[Modals.SELECT_LLM_BLOCK]?.[Modals.SELECT_LLM_ACTION];
                 if (lan && llm) {
@@ -118,7 +118,7 @@ export class ExecuteViewSubmitHandler {
                 break;
             }
             case 'regenModal': {
-                console.log("regenModal");
+                
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
                 const result_record = await persis.readByAssociation(association);
@@ -152,7 +152,7 @@ export class ExecuteViewSubmitHandler {
                         this.app.getLogger().debug("error: no sharing content");
                     }
                 } catch(err){
-                    console.log("share error:"+err);
+                    
                 }
                 break;
             }
@@ -178,9 +178,9 @@ export class ExecuteViewSubmitHandler {
                             let getresponse = await getNewCode(this.http, repo, path, input_str, commit, accessToken?.token, branch);
                             
                             if (getresponse && !getresponse?.serverError) {
-                                console.log("File Exists!");
+                                
                                 await sendNotification(this.read,this.modify,user,room,`File exists, current content will be overwritten!`);
-                                console.log("Inside get sha: "+getresponse.sha)
+                                
                                 let response = await uploadNewCode(
                                     this.http, repo, path, input_str, commit, accessToken?.token, branch, getresponse.sha
                                 )
@@ -191,7 +191,7 @@ export class ExecuteViewSubmitHandler {
                                 }
                             }
                             else {
-                                console.log("File not exist, create new one")
+                                
                                 let response = await uploadNewCode(
                                     this.http, repo, path, input_str, commit, accessToken?.token, branch
                                 )
@@ -208,7 +208,7 @@ export class ExecuteViewSubmitHandler {
                     }
                 }
                 catch(err){
-                    console.log("Share Github Error: "+JSON.stringify(err));
+                    
                 }
                 break;
             }

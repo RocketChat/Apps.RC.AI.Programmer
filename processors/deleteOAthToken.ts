@@ -44,6 +44,6 @@ export async function deleteOathToken({
             persis
         );
     } catch (error) {
-        console.log("deleteOathToken error : ", error);
+        
     }
 }
