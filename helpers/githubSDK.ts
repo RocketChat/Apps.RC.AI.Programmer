@@ -1,6 +1,5 @@
 import { IHttp, HttpStatusCode } from "@rocket.chat/apps-engine/definition/accessors";
 import { IGitHubIssue } from "../definition/githubIssue";
-import { ModalsEnum } from "../enum/Modals";
 import { IAuthData } from "@rocket.chat/apps-engine/definition/oauth2/IOAuth2";
 
 const BaseHost = "https://github.com/";
@@ -604,66 +603,6 @@ export async function getBasicUserInfo(
     }
 }
 
-export async function getUserAssignedIssues(
-    http: IHttp,
-    username: String,
-    access_token: String,
-    filter: {
-        filter: String,
-        state: String,
-        sort: String
-    },
-): Promise<IGitHubIssue[]> {
-
-
-    let url;
-
-    switch (filter.filter) {
-        case ModalsEnum.CREATED_ISSUE_FILTER:
-            url = `https://api.github.com/search/issues?q=is:${filter.state}+is:issue+sort:${filter.sort.substring(5)}-desc+author:${username}`
-            break;
-        case ModalsEnum.ASSIGNED_ISSUE_FILTER:
-            url = `https://api.github.com/search/issues?q=is:${filter.state}+is:issue+sort:${filter.sort.substring(5)}-desc+assignee:${username}`
-            break;
-        case ModalsEnum.MENTIONED_ISSUE_FILTER:
-            url = `https://api.github.com/search/issues?q=is:${filter.state}+is:issue+sort:${filter.sort.substring(5)}-desc+mentions:${username}`
-        default:
-            break;
-    }
-    try {
-        const response = await getRequest(
-            http,
-            access_token,
-            url,
-        );
-
-        const getAssignees = (assignees: any[]): string[] => assignees.map((val): string => {
-            return val.login as string;
-        })
-
-        const modifiedResponse: Array<IGitHubIssue> = response.items.map((value): IGitHubIssue => {
-            return {
-                issue_id: value.id as string,
-                issue_compact: value.body as string,
-                repo_url: value.repository_url as string,
-                user_login: value.user.login as string,
-                user_avatar: value.user.avatar_url as string,
-                number: value.number as number,
-                title: value.title as string,
-                body: value.body as string,
-                assignees: getAssignees(value.assignees),
-                state: value.state as string,
-                last_updated_at: value.updated_at as string,
-                comments: value.comments as number,
-            }
-        })
-
-        return modifiedResponse;
-    }
-    catch (e) {
-        return [];
-    }
-}
 
 export async function getIssueData(
     repoInfo: String,

@@ -83,12 +83,6 @@ export async function shareComponent(
     const textBlock = blockBuilder.createSectionBlock({
         text: `Congratulations! You have successfully generated code! You can choose from the following actions:`,
     });
-    const actionBlock2 = blockBuilder.createActionBlock({
-        elements: [genButton],
-    });
-    const textBlock2 = blockBuilder.createSectionBlock({
-        text: "You can also generate new code or change configuration:",
-    });
 
     return [textBlock, actionBlock];
 }

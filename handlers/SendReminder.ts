@@ -9,7 +9,6 @@ import { IPRdetail } from "../definition/PRdetails";
 import { IReminder } from "../definition/Reminder";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { ButtonStyle } from "@rocket.chat/ui-kit";
-import { ModalsEnum } from "../enum/Modals";
 
 export async function SendReminder(jobData: any, read: IRead, modify: IModify, http: IHttp, persis: IPersistence, app: AiProgrammerApp) {
   const reminders: IReminder[] = await getAllReminders(read);
@@ -153,7 +152,7 @@ async function NotifyUser(pullRequestsWaitingForReview: IPRdetail[], modify: IMo
       blockId: "githubdata",
       elements: [
         block.newButtonElement({
-          actionId: ModalsEnum.UNSUBSCRIBE_REMINDER_ACTION,
+          actionId: "unsubscribe-reminder-action",
           text: block.newPlainTextObject("Unsubscribe"),
           value: `${pull.repo}|${pull.number}`,
           style: ButtonStyle.DANGER,

@@ -1,7 +1,6 @@
 import { IHttp, HttpStatusCode, IRead } from "@rocket.chat/apps-engine/definition/accessors";
 import { UserInfo } from "os";
 import { UserInformation } from "../definition/Userinfo";
-import { ModalsEnum } from "../enum/Modals";
 
 class GitHubApi {
     private http: IHttp;

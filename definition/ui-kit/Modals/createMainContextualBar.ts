@@ -24,8 +24,6 @@ import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definitio
 import { AiProgrammerApp } from '../../../AiProgrammerApp';
 import { ButtonInActionComponent } from "./buttonInActionComponent";
 import { ButtonInSectionComponent } from "./buttonInSectionComponent";
-import { selectLanguageComponent} from "./selectLanguageComponent";
-import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 import {
