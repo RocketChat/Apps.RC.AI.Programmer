@@ -12,8 +12,8 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
   <li>Ask for Code Refinement</li> 
   <li>Personalized User Configuration with Different Programming Language and LLM Options</li> 
   <li>Login to GitHub with one click using built-in App Engine's OAth2 mechanism</li>
-  <li>Seamlessly Share the generated code content to GitHub Repository</li>
-  <li>Share generated code content to Rocket.Chat Channels</li>
+  <li>Share the generated code content to GitHub Repository by Seamlessly Manipulating GitHub APIs</li>
+  <li>Share generated code content into Rocket.Chat Channels</li>
 </ul>
 
 <h2 align="center">💡 Usage 💡</h2>
@@ -104,6 +104,7 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
   
   Where:
   http://localhost:3000 is your local server URL (if you are running in another port, change the 3000 to the appropriate port).
+  
   `username` is the username of your admin user.
   `password` is the password of your admin user.
   If you want to update the app deployed in your Rocket.Chat instance after making changes to it, you can run:
