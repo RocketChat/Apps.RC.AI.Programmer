@@ -32,7 +32,6 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 - Share generated code content to GitHub repository by setting up correct OAuth2 token, repository name, file path, branch, etc.
 - Edit content before sharing to any external resources to verify the correctness.
 
-<p style="font-size: 1rem" >The app can be accessed with any of the following slash commands: <code>/gh</code> or <code>/github</code>.</p>
 
 ### Command List
 
@@ -50,7 +49,7 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 <h2 align='center'>🚀 Contribution 🚀</h2>
 
 <ul>
-  <li>Set up the Application on your server using our <a href="#desktop_computer-quick-setup-desktop_computer">Quick Setup</a> and <a href="#desktop_computer-application-setup-desktop_computer">Application Setup</a>.</li>
+  <li>Set up the Application on your server using the following setup guide.</li>
  <li>Explore the app and look for existing issues to solve. We look forward to new PRs :100:.</li>
  <li>If you find a bug or a missing feature, feel free to open a new Issue.</li>
  <li>If you are new to Rocket.Chat App Development, follow the <a href="https://developer.rocket.chat/apps-engine/rocket.chat-apps-engine">developement documentation</a> and <a href="https://rocketchat.github.io/Rocket.Chat.Apps-engine/">RocketChat Apps Engine TypeScript Defenitions</a></li>
@@ -59,7 +58,6 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 
 
 
-<h2 align='center' id="quick-setup">:desktop_computer: Quick Setup :desktop_computer:</h2>
 
 <h2 align='center'> Manual Setup 🐳 </h2>
 
