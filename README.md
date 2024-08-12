@@ -18,17 +18,22 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 
 <h2 align="center">💡 Usage 💡</h2>
 
-<p style="font-size: 1em;"><em>Open Main Modal for Quick Access to Different Features</em></p>
+<p style="font-size: 1em;"><em>Open Main Contextual Bar for Quick Access to Various Features</em></p>
 
-<p>To open the main modal and access various features, use the command: <code>/ai-programmer</code>.</p>
+<p>To open the main contextual bar and access various features, use the command: <code>/ai-programmer</code>.</p>
 
-
-### Main Modal Features:
+### Main Contextual Bar:
 
 - Set up user configuration options for the different Programming Languages and LLMs.
-- Generate code pieces by typing in the requirements and expected features of code.
+- After setting up valid user configurations, users can progress to generate code pieces.
+- For the code generation result, users will be provided with several action choices.
+
+
+### Action Choices & Modal Features:
+
+- Generate new code pieces by typing in the requirements and expected features of code.
 - Ask for code refinement if not satified with the current code result by typing in refinement requirements.
-- Share generated code content into RC channel.
+- Share generated code content into the current RC channel to make the content viewable by other users.
 - Share generated code content to GitHub repository by setting up correct OAuth2 token, repository name, file path, branch, etc.
 - Edit content before sharing to any external resources to verify the correctness.
 
@@ -36,11 +41,11 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 ### Command List
 
 <ul>
-    <li><strong>Generate code pieces with specific description (please set language and llm correctly first!) →</strong> <code>/ai-programmer gen</code></li>
-    <li><strong>Set the language you want to use to generate code →</strong> <code>/ai-programmer set</code></li>
-    <li><strong>Switch to the LLM you want to use to generate code (please view the viable LLM options first!) →</strong> <code>/ai-programmer llm</code></li>
-    <li><strong>List the available LLM options →</strong> <code>/ai-programmer list</code></li>
     <li><strong>Use the interactive user interface to handle your operations →</strong> <code>/ai-programmer ui</code></li>
+    <li><strong>Set the language you want to use to generate code →</strong> <code>/ai-programmer set</code></li>
+  <li><strong>List the available LLM options →</strong> <code>/ai-programmer list</code></li>  
+  <li><strong>Switch to the LLM you want to use to generate code (please view the viable LLM options first!) →</strong> <code>/ai-programmer llm</code></li>
+    <li><strong>Generate code pieces with specific description (please set language and llm correctly first!) →</strong> <code>/ai-programmer gen</code></li>
     <li><strong>Login to Github (You should set OAuth2 settings first!) →</strong> <code>/ai-programmer login</code></li>
     <li><strong>Logout to Github →</strong> <code>/ai-programmer logout</code></li>
 </ul>
@@ -59,7 +64,7 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 
 
 
-<h2 align='center'> Manual Setup 🐳 </h2>
+<h2 align='center'> Rocket.Chat Server Setup 🐳 </h2>
 
 <ol>
   <li>Rocket.Chat Apps Run on a Rocket.Chat server. If you dont have a server setup, please go through this <a href="https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup">setup</a> and setup a development environment and setup you server</li> 
@@ -91,7 +96,7 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
   
   <li>In order to install Rocket.Chat Apps on your development server, the server must be in development mode. Enable Apps development mode by navigating to <i>Administration > General > Apps</i> and click on the True radio button over the Enable development mode..</li>
   
-  <li>Build and Upload your application by running the following inside the apps directory (/App.Github22/github) </li>
+  <li>Deploy the app on your server by executing the following command inside the project directory (/Apps.RC.AI.Programmer) </li>
   
   ```
   rc-apps deploy --url http://localhost:3000 --username <username> --password <password>
@@ -113,13 +118,13 @@ Enter `/ai-programmer` or  `/ai-programmer help` in the message input box of any
 
 <h2 align='center'>:desktop_computer: Application Setup :desktop_computer:</h2>
 
-<p>The GitHub App uses the GitHub OAth2 and you must setup a GitHub OAuth App to unlock the full potential of the GitHub App.</p>
+<p>In this AI Programmer App, we enabled users to share their generated code content to GitHub repository. Thus, users need to setup the GitHub OAth2 tokens to authenticate and acquire the permission of uploading files into their repositories. </p>
 
 <ol>
-<li>The First Step is to setup a GitHub Oauth2 App. To setup the GitHub Oauth App Follow <a href="https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app">These Steps</a>
+<li>The First Step is to setup a GitHub Oauth2 App. To setup the GitHub Oauth App Follow <a href="https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app">The Official Guidance</a>
 </li> 
 <li>
-The callback URL must be set to the url of your server as shown below. (Note : There is an issue of trailing slashes with RocketChat OathClient, so incase the authentication does not work, go to Administration Panel and try removing the trailing '/' at the end of the hosted url. This issue might not occur as it will be fixed in the future.)
+The callback URL must be set to the url which this app is deployed on. (e.g. http://localhost:3000 for local servers). 
 <div align="center">
  <img src="https://user-images.githubusercontent.com/70485812/180335941-f77ff2f9-272c-4716-a0fd-b50a2648e2de.png" alt="OAuth Example" width="50%"/>
  </div>
@@ -135,6 +140,6 @@ Once the GitHub OAuth app is setup, open the GitHub Application Settings and ent
 </li>
 </ol>
 
-The users can login to GitHub by entering the slash command `/github login` and then clicking on the `Login` button.
+The users can login to GitHub by entering the slash command `/ai-programmer login` and then clicking on the `Login` button.
 
-Users are logged out after a week but the users can also logout at any time by entering `/github logout`.
+Users are logged out after a week using a scheduler mechanism but the users can also logout at any time by entering `/ai-programmer logout`.
