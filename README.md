@@ -37,9 +37,9 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 ### Command List
 
 <ul>
-    <li><strong>Generate code pieces with specific description (please set language and llm correctly first!) →</strong> <code>/ai-programmer gen code_content</code></li>
-    <li><strong>Set the language you want to use to generate code →</strong> <code>/ai-programmer set C++</code></li>
-    <li><strong>Switch to the LLM you want to use to generate code (please view the viable LLM options first!) →</strong> <code>/ai-programmer llm llama3-70b</code></li>
+    <li><strong>Generate code pieces with specific description (please set language and llm correctly first!) →</strong> <code>/ai-programmer gen</code></li>
+    <li><strong>Set the language you want to use to generate code →</strong> <code>/ai-programmer set</code></li>
+    <li><strong>Switch to the LLM you want to use to generate code (please view the viable LLM options first!) →</strong> <code>/ai-programmer llm</code></li>
     <li><strong>List the available LLM options →</strong> <code>/ai-programmer list</code></li>
     <li><strong>Use the interactive user interface to handle your operations →</strong> <code>/ai-programmer ui</code></li>
     <li><strong>Login to Github (You should set OAuth2 settings first!) →</strong> <code>/ai-programmer login</code></li>
