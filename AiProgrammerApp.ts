@@ -14,7 +14,6 @@ import { settings } from './settings/settings';
 import { IUIKitResponse, UIKitActionButtonInteractionContext, UIKitBlockInteractionContext, UIKitViewCloseInteractionContext, UIKitViewSubmitInteractionContext } from '@rocket.chat/apps-engine/definition/uikit';
 import { ElementBuilder } from "./lib/ElementBuilder";
 import { BlockBuilder } from "./lib/BlockBuilder";
-import { ExecuteActionButtonHandler } from './handlers/ExecuteActionButtonHandler';
 import { ExecuteBlockActionHandler } from './handlers/ExecuteBlockActionHandler';
 import { ExecuteViewClosedHandler } from './handlers/ExecuteViewClosedHandler';
 import { ExecuteViewSubmitHandler } from './handlers/ExecuteViewSubmitHandler';
@@ -221,22 +220,4 @@ export class AiProgrammerApp extends App {
         return await handler.handleActions();
     }
 
-	public async executeActionButtonHandler(
-        context: UIKitActionButtonInteractionContext,
-        read: IRead,
-        http: IHttp,
-        persistence: IPersistence,
-        modify: IModify
-    ): Promise<IUIKitResponse> {
-        const handler = new ExecuteActionButtonHandler(
-            this,
-            read,
-            http,
-            persistence,
-            modify,
-            context
-        );
-
-        return await handler.handleActions();
-    }
 }

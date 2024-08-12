@@ -21,8 +21,7 @@ import { Handler } from "../handlers/Handler";
 import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { handleLogin, handleLogout } from "../handlers/GithubHandler";
-import {HandleInvalidRepoName} from "../handlers/HandleInvalidRepoName";
-import { pullRequestListMessage } from "../lib/pullReqeustListMessage";
+
 
 export class CommandUtility {
     sender: IUser;
@@ -55,108 +54,90 @@ export class CommandUtility {
     }
 
     private async handleSingularParamCommands() {
-        const data = {
-            room: this.room,
-            sender: this.sender,
-            arguments: this.command,
-        };
-        const handler = new Handler({
-            app: this.app,
-            read: this.read,
-            modify: this.modify,
-            persistence: this.persistence,
-            http: this.http,
-            sender: this.sender,
-            room: this.room,
-            triggerId: this.triggerId,
-        });
-        if (this.command[0].includes("/")) {
-            
-        } else {
-            switch (this.command[0]) {
-                case SubcommandEnum.TEST: {
-                    break;
+        switch (this.command[0]) {
+            case SubcommandEnum.TEST: {
+                break;
+            }
+            case SubcommandEnum.GITHUB_LOGIN:{
+                await handleLogin(
+                    this.app,
+                    this.read,
+                    this.modify,
+                    this.context,
+                    this.room,
+                    this.persistence
+                );
+                break;
+            }
+            case SubcommandEnum.GITHUB_LOGOUT:{
+                await handleLogout(
+                    this.app,
+                    this.read,
+                    this.modify,
+                    this.context,
+                    this.room,
+                    this.persistence,
+                    this.sender,
+                    this.http
+                );
+                break;
+            }
+            case SubcommandEnum.UI: {
+                const contextualBar = await createMainContextualBar(
+                    this.app,
+                    this.sender,
+                    this.read,
+                    this.persistence,
+                    this.modify,
+                    this.room
+                );
+        
+                if (contextualBar instanceof Error) {
+                    this.app.getLogger().error(contextualBar.message);
+                    return;
                 }
-                case SubcommandEnum.GITHUB_LOGIN:{
-                    await handleLogin(
-                        this.app,
-                        this.read,
-                        this.modify,
-                        this.context,
-                        this.room,
-                        this.persistence
+                const triggerId = this.triggerId;
+                if (triggerId) {
+                    await this.modify.getUiController().openSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        this.sender
                     );
-                    break;
                 }
-                case SubcommandEnum.GITHUB_LOGOUT:{
-                    await handleLogout(
-                        this.app,
-                        this.read,
-                        this.modify,
-                        this.context,
-                        this.room,
-                        this.persistence,
-                        this.sender,
-                        this.http
-                    );
-                    break;
-                }
-                case SubcommandEnum.UI: {
-                    const contextualBar = await createMainContextualBar(
-                        this.app,
-                        this.sender,
-                        this.read,
-                        this.persistence,
-                        this.modify,
-                        this.room
-                    );
-            
-                    if (contextualBar instanceof Error) {
-                        this.app.getLogger().error(contextualBar.message);
-                        return;
-                    }
-                    const triggerId = this.triggerId;
-                    if (triggerId) {
-                        await this.modify.getUiController().openSurfaceView(
-                            contextualBar,
-                            {
-                                triggerId,
-                            },
-                            this.sender
-                        );
-                    }
-                    break;
-                }
-                case SubcommandEnum.LIST: {
-                    await sendNotification(
-                        this.read,
-                        this.modify,
-                        this.sender,
-                        this.room,
-                        ` 
-                        * According to the regulation fo RC community, you can choose from the following open-source LLMs: *
+                break;
+            }
+            case SubcommandEnum.LIST: {
+                await sendNotification(
+                    this.read,
+                    this.modify,
+                    this.sender,
+                    this.room,
+                    ` 
+                    * According to the regulation fo RC community, you can choose from the following open-source LLMs: *
 1. mistral-7b
 2. llama3-70b
 3. codellama-7b
 4. codestral-22b
 Please use the direct name of LLM as above in the command \`/ai-programmer llm xxx\` to switch to that LLM.
-    `
-                    );
-                    break;
-                }
-                default: {
-                    await helperMessage({
-                        room: this.room,
-                        read: this.read,
-                        persistence: this.persistence,
-                        modify: this.modify,
-                        http: this.http,
-                        user: this.sender
-                    });
-                    break;
-                }
+`
+                );
+                break;
+            }
+            default: {
+                await helperMessage({
+                    room: this.room,
+                    read: this.read,
+                    persistence: this.persistence,
+                    modify: this.modify,
+                    http: this.http,
+                    user: this.sender
+                });
+                break;
             }
         }
+        
     }
 
     private async handleDualParamCommands() {
@@ -172,37 +153,7 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
             room: this.room,
             triggerId: this.triggerId,
         });
-        if (param.includes("/")){
-            const repoName = param;
-            const isValidRepoName = await HandleInvalidRepoName(
-                repoName,
-                this.http,
-                this.app,
-                this.modify,
-                this.sender,
-                this.read,
-                this.room
-            );
-            if (isValidRepoName) {
-                switch (query){
-                    case SubcommandEnum.GITHUB_PULL: {
-                        await pullRequestListMessage({ 
-                            repository: repoName, 
-                            room: this.room, 
-                            read: this.read, 
-                            persistence: this.persistence, 
-                            modify: this.modify, 
-                            http: this.http, 
-                            });
-                        break;
-                    }
-                    default:{
-                        break;
-                    }
-                }
-            }
-        }
-        else if (param.startsWith('set')){
+        if (param.startsWith('set')){
             handler.setLanguage(query);
             await sendNotification(
                 this.read,
@@ -223,16 +174,6 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
             );
         }
         
-    }
-
-
-    private async handleTriParamCommand() {
-        const data = {
-            repository: this.command[0],
-            query: this.command[1],
-            number: this.command[2],
-        };
-
     }
 
 
@@ -288,10 +229,6 @@ Please use the direct name of LLM as above in the command \`/ai-programmer llm x
                 }
                 case 2: {
                     this.handleDualParamCommands();
-                    break;
-                }
-                case 3: {
-                    this.handleTriParamCommand();
                     break;
                 }
                 default: {
