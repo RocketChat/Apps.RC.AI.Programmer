@@ -15,44 +15,6 @@ import {
 import { IUser } from "@rocket.chat/apps-engine/definition/users";
 import { URL } from "url";
 
-// const assoc = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, 'users');
-
-// export async function create(read: IRead, persistence: IPersistence, user: IUser): Promise<void> {
-//     const users = await getAllUsers(read);
-
-//     if (!users) {
-//         await persistence.createWithAssociation([user], assoc);
-//         return;
-//     }
-
-//     if (!isUserPresent(users, user)) {
-//         users.push(user);
-//         await persistence.updateByAssociation(assoc, users);
-//     }
-// }
-
-// export async function remove(read: IRead, persistence: IPersistence, user: IUser): Promise<void> {
-//     const users = await getAllUsers(read);
-
-//     if (!users || !isUserPresent(users, user)) {
-//         // @NOTE do nothing
-//         return;
-//     }
-
-//     const idx = users.findIndex((u: IUser) => u.id === user.id);
-//     users.splice(idx, 1);
-//     await persistence.updateByAssociation(assoc, users);
-// }
-
-// export async function getAllUsers(read: IRead): Promise<IUser[]> {
-//     const data = await read.getPersistenceReader().readByAssociation(assoc);
-//     return (data.length ? data[0] as IUser[] : []);
-// }
-
-// function isUserPresent(users: IUser[], targetUser: IUser): boolean {
-//     return users.some((user) => user.id === targetUser.id);
-// }
-
 /**
  * This function needed to be copied from the apps engine due to difficulties trying to
  * get access to the auth client from inside a job processor.

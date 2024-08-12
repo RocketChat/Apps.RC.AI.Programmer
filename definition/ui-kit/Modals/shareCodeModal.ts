@@ -79,20 +79,8 @@ export async function shareCodeModal(
                 blockId: Modals.SHARE_INPUT_BLOCK,
             }
         );
-        const generateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Share in the channel!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.SHARE_ACTION,
-                blockId: Modals.SHARE_BLOCK,
-            }
-        );
         blocks.push(configureText);
         blocks.push(generateInput);
-        // blocks.push(generateButton)
     }
     catch (err) {
         console.log("Error in code modal: "+err);

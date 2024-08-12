@@ -139,24 +139,12 @@ export async function shareGithubModal(
                 blockId: Modals.SHARE_GITHUB_INPUT_BLOCK,
             }
         );
-        const generateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Share to the github repository!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.SHARE_GITHUB_ACTION,
-                blockId: Modals.SHARE_GITHUB_BLOCK,
-            }
-        );
         blocks.push(configureText);
         blocks.push(repoInput);
         blocks.push(pathInput);
         blocks.push(branchInput);
         blocks.push(commitInput);
         blocks.push(generateInput);
-        // blocks.push(generateButton);
     }
     catch (err) {
         console.log("Error in code modal: "+err);

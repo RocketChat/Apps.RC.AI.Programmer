@@ -52,7 +52,6 @@ export async function createMainContextualBar(
         { roomId: room.id },
         true
     );
-    console.log("maincontext(): room ->" + room.id);
     
 	const close = elementBuilder.addButton(
         { text: "close", style: ButtonStyle.DANGER },

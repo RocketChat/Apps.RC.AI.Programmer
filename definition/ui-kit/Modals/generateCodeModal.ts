@@ -78,20 +78,8 @@ export async function generateCodeModal(
                 blockId: Modals.GEN_INPUT_BLOCK,
             }
         );
-        const generateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Generate Code Now!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
-            }
-        );
         blocks.push(configureText);
         blocks.push(generateInput);
-        // blocks.push(generateButton)
     }
     catch (err) {
         console.log("Error in code modal: "+err);

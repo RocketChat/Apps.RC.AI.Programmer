@@ -131,7 +131,6 @@ export class AiProgrammerApp extends App {
         );
 
         if (token) {
-            // await registerAuthorizedUser(read, persistence, user);
             await modify.getScheduler().scheduleOnce(deleteTokenTask);
         } else {
             text = `Authentication Failure 😔`;
