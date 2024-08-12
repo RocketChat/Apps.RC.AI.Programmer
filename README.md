@@ -20,49 +20,34 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 
 <p style="font-size: 1em;"><em>Open Main Modal for Quick Access to Different Features</em></p>
 
-<p>To open the main modal and access various features, use the command: <code>/github</code>.</p>
+<p>To open the main modal and access various features, use the command: <code>/ai-programmer</code>.</p>
 
 
 ### Main Modal Features:
 
-- Quick access to GitHub search
-- Create new issues
-- Manage repository subscriptions
-- Assign issues to users
+- Set up user configuration options for the different Programming Languages and LLMs.
+- Generate code pieces by typing in the requirements and expected features of code.
+- Ask for code refinement if not satified with the current code result by typing in refinement requirements.
+- Share generated code content into RC channel.
+- Share generated code content to GitHub repository by setting up correct OAuth2 token, repository name, file path, branch, etc.
+- Edit content before sharing to any external resources to verify the correctness.
 
 <p style="font-size: 1rem" >The app can be accessed with any of the following slash commands: <code>/gh</code> or <code>/github</code>.</p>
 
 ### Command List
 
 <ul>
-    <li><strong>See Helper Message / Command List →</strong> <code>/github help</code></li>
-    <li><strong>Login to GitHub →</strong> <code>/github login</code></li>
-    <li><strong>Logout from GitHub →</strong> <code>/github logout</code></li>
-    <li><strong>View your GitHub Profile and Issues →</strong> <code>/github me</code></li>
-    <li><strong>View/Add/Delete/Update Repository Subscriptions →</strong> <code>/github subscribe</code></li>
-    <li><strong>Subscribe to all repository events →</strong> <code>/github Username/RepositoryName subscribe</code></li>
-    <li><strong>Unsubscribe to all repository events →</strong> <code>/github Username/RepositoryName unsubscribe</code></li>
-    <li><strong>Add New Issues to GitHub Repository →</strong> <code>/github issue</code></li>
-    <li><strong>Search Issues and Pull Request →</strong> <code>/github search</code></li>
-    <li><strong>Assign and Share GitHub issues →</strong> <code>/github issues</code></li>
-    <li><strong>Review a Pull Request →</strong> <code>/github Username/RepositoryName pulls pullNumber</code></li>
-    <li><strong>See Interactive Button interface to fetch repository data →</strong> <code>/github Username/RepositoryName</code></li>
-    <li><strong>Get details of a Repository →</strong> <code>/github Username/RepositoryName repo</code></li>
-    <li><strong>Get Issues of a Repository →</strong> <code>/github Username/RepositoryName issues</code></li>
-    <li><strong>Get Contributors of a Repository →</strong> <code>/github Username/RepositoryName contributors</code></li>
-    <li><strong>Get Recent Pull Request of a Repository →</strong> <code>/github Username/RepositoryName pulls</code></li>
-    <li>Add a new repository for pull request review reminders -> /github reminder create</li>
-    <li>Get a list of repositories for which you've set up pull request review reminders -> /github reminder list</li>
+    <li><strong>Generate code pieces with specific description (please set language and llm correctly first!) →</strong> <code>/ai-programmer gen code_content</code></li>
+    <li><strong>Set the language you want to use to generate code →</strong> <code>/ai-programmer set C++</code></li>
+    <li><strong>Switch to the LLM you want to use to generate code (please view the viable LLM options first!) →</strong> <code>/ai-programmer llm llama3-70b</code></li>
+    <li><strong>List the available LLM options →</strong> <code>/ai-programmer list</code></li>
+    <li><strong>Use the interactive user interface to handle your operations →</strong> <code>/ai-programmer ui</code></li>
+    <li><strong>Login to Github (You should set OAuth2 settings first!) →</strong> <code>/ai-programmer login</code></li>
+    <li><strong>Logout to Github →</strong> <code>/ai-programmer logout</code></li>
 </ul>
 
 
-<h2 align='center'>🚀 Contributing 🚀</h2>
-
-<div align='center' width='100%'>
-<a href="https://github.com/monoclehq">
-<img src="https://open-source-assets.middlewarehq.com/svgs/RocketChat-Apps.Github22-contributor-metrics-dark-widget-premium.svg"></img>
-</a>
-</div>
+<h2 align='center'>🚀 Contribution 🚀</h2>
 
 <ul>
   <li>Set up the Application on your server using our <a href="#desktop_computer-quick-setup-desktop_computer">Quick Setup</a> and <a href="#desktop_computer-application-setup-desktop_computer">Application Setup</a>.</li>
@@ -75,14 +60,6 @@ The AI Programmer Rocket.Chat App enables users to generate a short piece of cod
 
 
 <h2 align='center' id="quick-setup">:desktop_computer: Quick Setup :desktop_computer:</h2>
-
-<h2 align='center'> Gitpod 🍊 </h2>
-
-Start developing and make changes to your code via a single click **Anytime-Anywhere**!
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/RocketChat/Apps.Github22)
-
-Using [Thrust](https://github.com/henit-chobisa/Thrust.RC) for quickly setup your Rocket.Chat workspace & hot-reload for develping and deploying Github App, no need to worry about setting up any Rocket.Chat server before hand.
 
 <h2 align='center'> Manual Setup 🐳 </h2>
 
@@ -104,14 +81,13 @@ Using [Thrust](https://github.com/henit-chobisa/Thrust.RC) for quickly setup you
   <li>Clone the GitHub Repository</li>
     
  ```
-    git clone https://github.com/RocketChat/Apps.Github22
+    git clone https://github.com/RocketChat/Apps.RC.AI.Programmer
  ```
   
-  <li>Enter the App.Github22 directory and install dependecies</li>
+  <li>Enter the AI.Programmer directory and install dependecies</li>
   
   ```
-    cd Apps.Github22
-    cd github
+    cd Apps.RC.AI.Programmer
     npm install
   ```
   
@@ -135,7 +111,7 @@ Using [Thrust](https://github.com/henit-chobisa/Thrust.RC) for quickly setup you
 </ol>
 
 The Application is now installed on the server. You can verify this by checking the installed applications from the administration panel.
-Enter `/github` or  `/github help` in the message input box of any channel on the server to know about different features and how to trigger them using different slash commands.
+Enter `/ai-programmer` or  `/ai-programmer help` in the message input box of any channel on the server to know about different features and how to trigger them using different slash commands.
 
 <h2 align='center'>:desktop_computer: Application Setup :desktop_computer:</h2>
 
@@ -154,8 +130,9 @@ The callback URL must be set to the url of your server as shown below. (Note : T
 
 <li>
 Once the GitHub OAuth app is setup, open the GitHub Application Settings and enter the GitHub App OAuth Client Id and Client Secret over here.
+
 <div align="center">
-<img src="https://user-images.githubusercontent.com/70485812/180335480-4b7ceba2-1c0a-4d81-be9b-843121cbbc6b.png" alt="OAuth Setting Example" width="70%"/>
+<img src="https://github.com/user-attachments/assets/7609f317-025c-4760-8685-9b590192bfbc" alt="OAuth Setting Example" width="70%"/>
 <div>
 </li>
 </ol>
