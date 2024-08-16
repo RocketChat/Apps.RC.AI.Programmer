@@ -330,6 +330,8 @@ export class ExecuteBlockActionHandler {
                                 user
                             );
                         }
+                        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                        await this.persistence.updateByAssociation(association, { share_input: result_str }, true);
                     } else {
                         this.app.getLogger().debug("error: no share content");
                     }
@@ -386,6 +388,8 @@ export class ExecuteBlockActionHandler {
                                 user
                             );
                         }
+                        const association2 = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`);
+                        await this.persistence.updateByAssociation(association2, { share_github_input: result_str }, true);
                     } else {
                         this.app.getLogger().debug("error: no share content");
                     }
