@@ -151,7 +151,7 @@ export class AiProgrammerApp extends App {
         refreshTokenUri: "https://github.com/login/oauth/access_token",
         revokeTokenUri: `https://api.github.com/applications/client_id/token`,
         authorizationCallback: this.authorizationCallback.bind(this),
-        defaultScopes: ["users", "repo"],
+        defaultScopes: ["users", "repo", "gist"],
     };
     public getOauth2ClientInstance(): IOAuth2Client {
         if (!this.oauth2ClientInstance) {

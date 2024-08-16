@@ -171,6 +171,56 @@ export async function uploadNewCode(
     return JSONResponse;
 }
 
+export async function uploadGist(
+    http: IHttp,
+    content: string,
+    commitMessage: string,
+    access_token: string,
+    filename: string,
+    permission?: string,
+    
+) {
+    const base64Content = Buffer.from(content).toString('base64');
+    const payload = {
+        description: commitMessage,
+        files: {
+            [filename]: {
+              content: content
+            }
+          }
+      };
+    if (permission == "public") {
+        payload["public"] = true;
+    } else {
+        payload["public"] = false;
+    }
+    
+    const response = await http.post(
+        `https://api.github.com/gists`,
+        {
+            headers: {
+                "Authorization": `token ${access_token}`,
+                "Content-Type": "application/json",
+                'Accept': 'application/vnd.github.v3+json',
+                "X-GitHub-Api-Version": "2022-11-28"
+            },
+            
+            data: payload,
+            
+        }
+    );
+    // If it isn't a 2xx code, something wrong happened
+    
+    let JSONResponse = JSON.parse(response.content || "{}");
+    if (!response.statusCode.toString().startsWith("2")) {
+        JSONResponse["serverError"] = true;
+    } else {
+        JSONResponse["serverError"] = false;
+    }
+    
+    return JSONResponse;
+}
+
 export async function getBasicUserInfo(
     http: IHttp,
     access_token: String,

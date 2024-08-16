@@ -16,7 +16,7 @@ import { sendNotification, sendMessage } from "../helpers/message";
 import { Handler } from "./Handler";
 import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generationComponent } from "../definition/ui-kit/Modals/generationComponent";
-import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
+import { getNewCode, uploadNewCode, uploadGist } from "../helpers/githubSDK";
 import { getAccessTokenForUser } from '../persistance/auth';
 import { handleLogin, handleLogout } from "../handlers/GithubHandler";
 
@@ -209,6 +209,35 @@ export class ExecuteViewSubmitHandler {
                 }
                 catch(err){
                     
+                }
+                break;
+            }
+            case 'shareGist': {
+                try {
+                    const persis = this.read.getPersistenceReader();
+                    const share_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_input`));
+                    const gist_filename_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_filename_input`));
+                    const gist_commit_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_commit_input`));
+                    const content = share_record[0]["share_gist_input"] as string;
+                    const filename = gist_filename_record[0]["share_gist_filename_input"] as string;
+                    const commit = gist_commit_record[0]["share_gist_commit_input"] as string;
+                    let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
+                    if (accessToken == undefined) {
+                        console.log("access token undefined");
+                        break;
+                    }
+                    let response = await uploadGist(
+                        this.http,
+                        content,
+                        commit,
+                        accessToken.token,
+                        filename,
+                        "public",
+                    )
+                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Gist!`);
+                }
+                catch (err) {
+                    await sendNotification(this.read,this.modify,user,room,`Sharing to Gist failed! Here's the error message: `+err);
                 }
                 break;
             }

@@ -24,6 +24,7 @@ import { shareCodeModal } from "../definition/ui-kit/Modals/shareCodeModal";
 import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
 import { getAccessTokenForUser } from '../persistance/auth';
 import { shareGithubModal } from "../definition/ui-kit/Modals/shareGithubModal";
+import { shareGistModal } from "../definition/ui-kit/Modals/shareGistModal";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -152,6 +153,27 @@ export class ExecuteBlockActionHandler {
                 if (value) {
                     const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`);
                     await this.persistence.updateByAssociation(association, { share_github_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GIST_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GIST_FILENAME_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_filename_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_filename_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GIST_COMMIT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_commit_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_commit_input: value }, true);
                 }
                 break;
             }
@@ -339,7 +361,7 @@ export class ExecuteBlockActionHandler {
                             const lines = trimmed.split('\n');
                             result_str = lines.slice(1, -1).join('\n').trim();
                         }
-                        const modal = await shareGithubModal(
+                        const modal = await shareGistModal(
                             this.app,
                             user,
                             room,

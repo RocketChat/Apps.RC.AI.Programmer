@@ -20,7 +20,7 @@ export async function authorize(
 ): Promise<void> {
     const url = await app
         .getOauth2ClientInstance()
-        .getUserAuthorizationUrl(user);
+        .getUserAuthorizationUrl(user, ["gist"]);
 
     const authen_block = await authenComponent(
         app,

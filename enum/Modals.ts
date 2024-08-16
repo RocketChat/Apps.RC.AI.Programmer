@@ -51,4 +51,10 @@ export enum Modals {
     SHARE_GITHUB_BRANCH_INPUT_ACTION = "share-github-branch-input-action",
     SHARE_GITHUB_BLOCK = "share-github-block",
     SHARE_GITHUB_ACTION = "share-github-action",
+    SHARE_GIST_FILENAME_INPUT_BLOCK = "share-gist-filename-input-block",
+    SHARE_GIST_FILENAME_INPUT_ACTION = "share-gist-filename-input-action",
+    SHARE_GIST_COMMIT_INPUT_BLOCK = "share-gist-commit-input-block",
+    SHARE_GIST_COMMIT_INPUT_ACTION = "share-gist-commit-input-action",
+    SHARE_GIST_INPUT_BLOCK = "share-gist-input-block",
+    SHARE_GIST_INPUT_ACTION = "share-gist-input-action",
 }

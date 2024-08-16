@@ -59,7 +59,7 @@ export async function shareComponent(
     );
     const buttonGithubElement = elementBuilder.addButton(
         {
-            text: "Share to Github",
+            text: "Share to Gist",
             style: ButtonStyle.PRIMARY,
         },
         {

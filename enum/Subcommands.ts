@@ -9,8 +9,8 @@ export enum SubcommandEnum {
     CREATE= 'create',
     LIST ='list',
     REGEN = 'regen',
-    GITHUB_LOGIN = 'login',
-    GITHUB_LOGOUT = 'logout',
-    GITHUB_UPLOAD = 'github_upload',
-    GITHUB_PULL = 'github_pull',
+    GITHUB_LOGIN = 'gh_login',
+    GITHUB_LOGOUT = 'gh_logout',
+    GITHUB_UPLOAD = 'gh_upload',
+    GITHUB_PULL = 'gh_pull',
 }

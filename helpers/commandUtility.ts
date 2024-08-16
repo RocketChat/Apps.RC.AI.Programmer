@@ -21,7 +21,8 @@ import { Handler } from "../handlers/Handler";
 import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { handleLogin, handleLogout } from "../handlers/GithubHandler";
-
+import { getAccessTokenForUser } from '../persistance/auth';
+import { uploadGist } from "./githubSDK";
 
 export class CommandUtility {
     sender: IUser;
@@ -80,6 +81,28 @@ export class CommandUtility {
                     this.sender,
                     this.http
                 );
+                break;
+            }
+            case "gist": {
+                try {
+                    let accessToken = await getAccessTokenForUser(this.read, this.sender, this.app.oauth2Config);
+                    if (accessToken == undefined) {
+                        console.log("access token undefined");
+                        break;
+                    }
+                    let response = await uploadGist(
+                        this.http,
+                        "test",
+                        "test desctiption",
+                        accessToken.token,
+                        "test2.md",
+                        "public",
+                    )
+                    console.log("get response: "+JSON.stringify(response));
+                }
+                catch (err) {
+                    console.log("gist error"+ err);
+                }
                 break;
             }
             case SubcommandEnum.UI: {
