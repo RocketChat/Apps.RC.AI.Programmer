@@ -205,6 +205,32 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
+            case Modals.CONFIGURE_BAR_ACTION: {
+                const contextualBar = await createMainContextualBar(
+                    this.app,
+                    user,
+                    this.read,
+                    this.persistence,
+                    this.modify,
+                    room
+                );
+        
+                if (contextualBar instanceof Error) {
+                    this.app.getLogger().error(contextualBar.message);
+                    break;
+                }
+                
+                if (triggerId) {
+                    await this.modify.getUiController().openSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        user
+                    );
+                }
+                break;
+            }
             case Modals.REGEN_BUTTON_ACTION: {
                 if (!room) {
                     this.app.getLogger().error("Room is not specified!");

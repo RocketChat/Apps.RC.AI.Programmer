@@ -77,8 +77,18 @@ export async function shareComponent(
             actionId: Modals.GEN_BUTTON_ACTION,
         }
     );
+    const configureButton = elementBuilder.addButton(
+        {
+            text: "Adjust configuration",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.CONFIGURE_BAR_BLOCK,
+            actionId: Modals.CONFIGURE_BAR_ACTION,
+        }
+    );
     const actionBlock = blockBuilder.createActionBlock({
-        elements: [refineButton, buttonElement, buttonGithubElement, genButton],
+        elements: [refineButton, buttonElement, buttonGithubElement, genButton, configureButton],
     });
     const textBlock = blockBuilder.createSectionBlock({
         text: `Congratulations! You have successfully generated code! You can choose from the following actions:`,

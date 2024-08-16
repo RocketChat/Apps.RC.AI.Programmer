@@ -13,6 +13,8 @@ export enum Modals {
     VALUE = "value",
     CONFIGURE_BLOCK = "configure-block",
     CONFIGURE_ACTION = "configure-action",
+    CONFIGURE_BAR_BLOCK = "configure-bar-block",
+    CONFIGURE_BAR_ACTION = "configure-bar-action",
     REGEN_BLOCK = "regenerate-block",
     REGEN_ACTION = "regenerate-action",
     GEN_BLOCK = "generate-block",

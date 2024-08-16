@@ -99,6 +99,7 @@ export class CommandUtility {
                         "public",
                     )
                     console.log("get response: "+JSON.stringify(response));
+                    console.log("response url" + JSON.stringify(response.url))
                 }
                 catch (err) {
                     console.log("gist error"+ err);

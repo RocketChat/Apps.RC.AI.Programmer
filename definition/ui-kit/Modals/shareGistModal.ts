@@ -70,7 +70,7 @@ export async function shareGistModal(
                 placeholder: "yourcode.java",
                 label: "Enter the filename for the code piece you're sharing:",
                 optional: false,
-                multiline: true,
+                multiline: false,
                 dispatchActionConfigOnInput: true,
                 initialValue: "",
             },

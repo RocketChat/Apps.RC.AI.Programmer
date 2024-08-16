@@ -234,7 +234,7 @@ export class ExecuteViewSubmitHandler {
                         filename,
                         "public",
                     )
-                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Gist!`);
+                    await sendNotification(this.read,this.modify,user,room,`Successfully shared your code to Gist! The Gist link: ` + response.html_url);
                 }
                 catch (err) {
                     await sendNotification(this.read,this.modify,user,room,`Sharing to Gist failed! Here's the error message: `+err);
