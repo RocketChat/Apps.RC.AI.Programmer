@@ -154,7 +154,7 @@ export async function shareGithubModal(
     const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: 'shareGithub',
+        id: Modals.SHARE_GITHUB_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,

@@ -122,7 +122,7 @@ export async function shareGistModal(
     const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: 'shareGist',
+        id: Modals.SHARE_GIST_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,

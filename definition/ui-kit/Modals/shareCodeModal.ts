@@ -88,7 +88,7 @@ export async function shareCodeModal(
     const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: 'shareInChannel',
+        id: Modals.SHARE_CODE_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,

@@ -3,9 +3,6 @@ import {
 	SettingType,
 } from '@rocket.chat/apps-engine/definition/settings';
 export enum AppSettingsEnum {
-    ReminderCRONjobID = 'reminder_cron_job_id',
-    ReminderCRONjobLabel = 'cron_job_string_for_pr_reminders_label',
-    ReminderCRONjobPackageValue = '0 9 * * *',
     BaseHostID = "base_host_id",
     BaseHostLabel = "base_host_label",
     BaseHostPackageValue = "https://github.com/",
@@ -14,15 +11,6 @@ export enum AppSettingsEnum {
     BaseApiHostPackageValue = "https://api.github.com/"
 }
 export const settings: ISetting[] = [
-
-	{
-        id: AppSettingsEnum.ReminderCRONjobID,
-        i18nLabel: AppSettingsEnum.ReminderCRONjobLabel,
-        type: SettingType.STRING,
-        required: true,
-        public: false,
-        packageValue: AppSettingsEnum.ReminderCRONjobPackageValue,
-    },
     {
         id: AppSettingsEnum.BaseHostID,
         i18nLabel: AppSettingsEnum.BaseHostLabel,

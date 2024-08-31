@@ -97,7 +97,7 @@ export async function createMainContextualBar(
     .addDividerBlock();
     
 	return {
-        id: 'mainContextualBar',
+        id: Modals.MAIN_BAR_VIEW,
         type: UIKitSurfaceType.CONTEXTUAL_BAR,
         title: {
             type: TextObjectType.MRKDWN,

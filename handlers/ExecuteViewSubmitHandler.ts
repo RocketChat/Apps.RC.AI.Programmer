@@ -60,7 +60,7 @@ export class ExecuteViewSubmitHandler {
         });
     
         switch (view.id) {
-            case "mainContextualBar": {
+            case Modals.MAIN_BAR_VIEW: {
                 
                 let lan: string|undefined = view.state?.[Modals.SELECT_LAN_BLOCK]?.[Modals.SELECT_LAN_ACTION];
                 let llm: string|undefined = view.state?.[Modals.SELECT_LLM_BLOCK]?.[Modals.SELECT_LLM_ACTION];
@@ -104,7 +104,7 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
-            case 'generateModal':{
+            case Modals.GENERATE_MODAL_VIEW:{
                 const persis = this.read.getPersistenceReader();
                 const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
                 const gen_record = await persis.readByAssociation(association_input);
@@ -117,7 +117,7 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
-            case 'regenModal': {
+            case Modals.REGEN_MODAL_VIEW: {
                 
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
@@ -135,7 +135,7 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
-            case 'shareInChannel':{
+            case Modals.SHARE_CODE_VIEW:{
                 try{
                     const persis = this.read.getPersistenceReader();
                     const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
@@ -156,7 +156,7 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
-            case 'shareGithub':{
+            case Modals.SHARE_GITHUB_VIEW:{
                 try{
                     const persis = this.read.getPersistenceReader();
                     const share_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`));
@@ -212,7 +212,7 @@ export class ExecuteViewSubmitHandler {
                 }
                 break;
             }
-            case 'shareGist': {
+            case Modals.SHARE_GIST_VIEW: {
                 try {
                     const persis = this.read.getPersistenceReader();
                     const share_record = await persis.readByAssociation(new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_input`));

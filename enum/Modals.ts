@@ -59,4 +59,10 @@ export enum Modals {
     SHARE_GIST_COMMIT_INPUT_ACTION = "share-gist-commit-input-action",
     SHARE_GIST_INPUT_BLOCK = "share-gist-input-block",
     SHARE_GIST_INPUT_ACTION = "share-gist-input-action",
+    MAIN_BAR_VIEW = "mainContextualBar",
+    GENERATE_MODAL_VIEW = "generateModal",
+    REGEN_MODAL_VIEW = "regenModal",
+    SHARE_CODE_VIEW = "shareInChannel",
+    SHARE_GITHUB_VIEW = "shareGithub",
+    SHARE_GIST_VIEW = "shareGist",
 }

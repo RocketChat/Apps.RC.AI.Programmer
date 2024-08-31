@@ -86,7 +86,7 @@ export async function regenerateCodeModal(
     const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: 'regenModal',
+        id: Modals.REGEN_MODAL_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
