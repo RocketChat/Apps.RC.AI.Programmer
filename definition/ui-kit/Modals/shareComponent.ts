@@ -37,9 +37,19 @@ export async function shareComponent(
 	viewId?: string,
 ): Promise<Array<Block>> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
+    const refineButton = elementBuilder.addButton(
+        {
+            text: "Refine the code",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.REGEN_BUTTON_BLOCK,
+            actionId: Modals.REGEN_BUTTON_ACTION,
+        }
+    );
     const buttonElement = elementBuilder.addButton(
         {
-            text: "Share your code",
+            text: "Share in channel",
             style: ButtonStyle.PRIMARY,
         },
         {
@@ -47,11 +57,41 @@ export async function shareComponent(
             actionId: Modals.SHARE_BUTTON_ACTION,
         }
     );
+    const buttonGithubElement = elementBuilder.addButton(
+        {
+            text: "Share to Gist",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.SHARE_GITHUB_BUTTON_BLOCK,
+            actionId: Modals.SHARE_GITHUB_BUTTON_ACTION,
+        }
+    );
+    const genButton = elementBuilder.addButton(
+        {
+            text: "Generate new code",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.GEN_BUTTON_BLOCK,
+            actionId: Modals.GEN_BUTTON_ACTION,
+        }
+    );
+    const configureButton = elementBuilder.addButton(
+        {
+            text: "Adjust configuration",
+            style: ButtonStyle.PRIMARY,
+        },
+        {
+            blockId: Modals.CONFIGURE_BAR_BLOCK,
+            actionId: Modals.CONFIGURE_BAR_ACTION,
+        }
+    );
     const actionBlock = blockBuilder.createActionBlock({
-        elements: [buttonElement],
+        elements: [refineButton, buttonElement, buttonGithubElement, genButton, configureButton],
     });
     const textBlock = blockBuilder.createSectionBlock({
-        text: "Want to share your code with other users in channel?",
+        text: `Congratulations! You have successfully generated code! You can choose from the following actions:`,
     });
 
     return [textBlock, actionBlock];

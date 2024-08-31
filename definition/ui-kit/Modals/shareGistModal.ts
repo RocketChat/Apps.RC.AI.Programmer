@@ -31,7 +31,7 @@ import { RocketChatAssociationModel, RocketChatAssociationRecord } from '@rocket
 import { Handler } from "../../../handlers/Handler";
 
 
-export async function generateCodeModal(
+export async function shareGistModal(
 	app: AiProgrammerApp,
     user: IUser,
     room: IRoom,
@@ -39,9 +39,11 @@ export async function generateCodeModal(
     modify: IModify,
     http: IHttp,
     persistence: IPersistence,
+    content: string,
     triggerId?: string,
     threadId?: string,
-    viewId?: string
+    viewId?: string,
+    
 ): Promise<IUIKitSurfaceViewParam | Error> {
 	const { elementBuilder, blockBuilder } = app.getUtils();
 	const blocks: Block[] = [];
@@ -57,38 +59,70 @@ export async function generateCodeModal(
             room: room,
             triggerId: triggerId,
         });
-        let language = await handler.getLanguage();
-        let LLM = await handler.getLLM();
+        
         const configureText : SectionBlock= {
             type: 'section',
-            text: blockBuilder.createTextObjects([`User Configuration: You are using language: `+ language+' with LLM: '+LLM+` .`])[0],
+            text: blockBuilder.createTextObjects([`You can now share your generated code to the Gist. Please verify the content and configure the Github OAuth before sharing!`])[0],
         };
-        const generateInput = inputElementComponent(
+        const filenameInput = inputElementComponent(
             {
                 app,
-                placeholder: "Please help me generate a binary search tree ...",
-                label: "Write the description for the code you want to generate:",
+                placeholder: "yourcode.java",
+                label: "Enter the filename for the code piece you're sharing:",
+                optional: false,
+                multiline: false,
+                dispatchActionConfigOnInput: true,
+                initialValue: "",
+            },
+            {
+                actionId: Modals.SHARE_GIST_FILENAME_INPUT_ACTION,
+                blockId: Modals.SHARE_GIST_FILENAME_INPUT_BLOCK
+            }
+        );
+        const commitInput = inputElementComponent(
+            {
+                app,
+                placeholder: "This helps users to create a new function...",
+                label: "Enter the description for this code piece:",
                 optional: false,
                 multiline: true,
                 dispatchActionConfigOnInput: true,
-                initialValue: '',
+                initialValue: "",
             },
             {
-                actionId: Modals.GEN_INPUT_ACTION,
-                blockId: Modals.GEN_INPUT_BLOCK,
+                actionId: Modals.SHARE_GIST_COMMIT_INPUT_ACTION,
+                blockId: Modals.SHARE_GIST_COMMIT_INPUT_BLOCK,
+            }
+        );
+        const generateInput = inputElementComponent(
+            {
+                app,
+                placeholder: "",
+                label: "The following content will be shared to gist:",
+                optional: false,
+                multiline: true,
+                dispatchActionConfigOnInput: true,
+                initialValue: content,
+            },
+            {
+                actionId: Modals.SHARE_GIST_INPUT_ACTION,
+                blockId: Modals.SHARE_GIST_INPUT_BLOCK,
             }
         );
         blocks.push(configureText);
+        blocks.push(filenameInput);
+        blocks.push(commitInput);
         blocks.push(generateInput);
     }
     catch (err) {
         
         this.app.getLogger().error(err);
     }
+
     const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: Modals.GENERATE_MODAL_VIEW,
+        id: Modals.SHARE_GIST_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
@@ -96,8 +130,8 @@ export async function generateCodeModal(
         },
         blocks,
         submit: block.newButtonElement({
-            actionId: "generateModal",
-            text: block.newPlainTextObject("Generate code"),
+            actionId: "shareGist",
+            text: block.newPlainTextObject("Share to the Gist"),
         }),
     };
 }

@@ -24,8 +24,6 @@ import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definitio
 import { AiProgrammerApp } from '../../../AiProgrammerApp';
 import { ButtonInActionComponent } from "./buttonInActionComponent";
 import { ButtonInSectionComponent } from "./buttonInSectionComponent";
-import { selectLanguageComponent} from "./selectLanguageComponent";
-import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
@@ -77,33 +75,27 @@ export async function regenerateCodeModal(
                 blockId: Modals.COMMENT_INPUT_BLOCK,
             }
         );
-        const regenerateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Help me refine it!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.GEN_ACTION,
-                blockId: Modals.GEN_BLOCK,
-            }
-        );
         blocks.push(configureText);
         blocks.push(regenerateInput);
-        blocks.push(regenerateButton);
+        
     }
     catch (err) {
-        console.log("Error in Gen: "+err);
+        
         this.app.getLogger().error(err);
     }
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: viewId || 'modalId',
+        id: Modals.REGEN_MODAL_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "regenModal",
+            text: block.newPlainTextObject("Refine the code"),
+        }),
     };
 }

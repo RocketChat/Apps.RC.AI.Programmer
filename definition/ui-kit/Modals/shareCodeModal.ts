@@ -24,8 +24,6 @@ import { IUIKitContextualBarViewParam } from '@rocket.chat/apps-engine/definitio
 import { AiProgrammerApp } from '../../../AiProgrammerApp';
 import { ButtonInActionComponent } from "./buttonInActionComponent";
 import { ButtonInSectionComponent } from "./buttonInSectionComponent";
-import { selectLanguageComponent} from "./selectLanguageComponent";
-import { selectLLMComponent} from "./selectLLMComponent";
 import { Modals } from "../../../enum/Modals";
 import { inputElementComponent } from "./common/inputElementComponent";
 import { IUIKitModalViewParam } from "@rocket.chat/apps-engine/definition/uikit/UIKitInteractionResponder";
@@ -81,34 +79,25 @@ export async function shareCodeModal(
                 blockId: Modals.SHARE_INPUT_BLOCK,
             }
         );
-        const generateButton = ButtonInSectionComponent(
-            {
-                app,
-                buttonText: "Share in the channel!",
-                style: ButtonStyle.PRIMARY,
-            },
-            {
-                actionId: Modals.SHARE_ACTION,
-                blockId: Modals.SHARE_BLOCK,
-            }
-        );
         blocks.push(configureText);
         blocks.push(generateInput);
-        blocks.push(generateButton)
     }
     catch (err) {
-        console.log("Error in code modal: "+err);
         this.app.getLogger().error(err);
     }
-
+    const block = modify.getCreator().getBlockBuilder();
     
 	return {
-        id: viewId || 'modalId',
+        id: Modals.SHARE_CODE_VIEW,
         type: UIKitSurfaceType.MODAL,
         title: {
             type: TextObjectType.MRKDWN,
             text: "Ai Programmer",
         },
         blocks,
+        submit: block.newButtonElement({
+            actionId: "shareInChannel",
+            text: block.newPlainTextObject("Share in the channel"),
+        }),
     };
 }

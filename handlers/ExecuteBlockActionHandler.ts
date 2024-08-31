@@ -21,6 +21,10 @@ import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import { generateCodeModal } from "../definition/ui-kit/Modals/generateCodeModal";
 import { regenerateCodeModal } from "../definition/ui-kit/Modals/regenerateCodeModal";
 import { shareCodeModal } from "../definition/ui-kit/Modals/shareCodeModal";
+import { getNewCode, uploadNewCode } from "../helpers/githubSDK";
+import { getAccessTokenForUser } from '../persistance/auth';
+import { shareGithubModal } from "../definition/ui-kit/Modals/shareGithubModal";
+import { shareGistModal } from "../definition/ui-kit/Modals/shareGistModal";
 
 export class ExecuteBlockActionHandler {
     private context: UIKitBlockInteractionContext;
@@ -50,7 +54,7 @@ export class ExecuteBlockActionHandler {
         const roomId = result.roomId;
         const room = (await this.read.getRoomReader().getById(roomId)) as IRoom;
         if (!room) return this.context.getInteractionResponder().errorResponse();
-        console.log("handleAction(): room ->" + room.id + " roomId: " + roomId);
+        
         const handler = new Handler({
             app: this.app,
             read: this.read,
@@ -63,6 +67,7 @@ export class ExecuteBlockActionHandler {
         });
         switch (actionId) {
             case Modals.CONFIGURE_ACTION: {
+                
                 const persis = this.read.getPersistenceReader();
                 const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
                 const record = await persis.readByAssociation(association);
@@ -109,24 +114,18 @@ export class ExecuteBlockActionHandler {
                             user
                         );
                     }
+                } else {
+                    await sendNotification(
+                        this.read,
+                        this.modify,
+                        user,
+                        room,
+                        `Please check your configuration!`
+                    );
                 }
                 break;
             }
             case Modals.MAIN_CLOSE_ACTION: {
-                break;
-            }
-            case Modals.SELECT_LAN_ACTION: {
-                if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_language`);
-                    await this.persistence.updateByAssociation(association, { language: value }, true);
-                }
-                break;
-            }
-            case Modals.SELECT_LLM_ACTION: {
-                if (value) {
-                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#selected_llm`);
-                    await this.persistence.updateByAssociation(association, { LLM: value }, true);
-                }
                 break;
             }
             case Modals.COMMENT_INPUT_ACTION: {
@@ -150,50 +149,85 @@ export class ExecuteBlockActionHandler {
                 }
                 break;
             }
-            case Modals.SHARE_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
-                const share_record = await persis.readByAssociation(association_input);
-                if (share_record) {
-                    let input_str = share_record[0]['share_input'] as string
-                    await sendMessage(
-                            this.modify,
-                            room,
-                            user,
-                            input_str,
-                        );
-                } else {
-                    this.app.getLogger().debug("error: no sharing content");
+            case Modals.SHARE_GITHUB_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_input: value }, true);
                 }
                 break;
             }
-            case Modals.GEN_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#gen_input`);
-                const gen_record = await persis.readByAssociation(association_input);
-                if (gen_record) {
-                    let input_str = gen_record[0]['gen_input'] as string
-                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
-                    handler.generateCodeFromParam(input_str);
-                } else {
-                    this.app.getLogger().debug("error: no gen command");
+            case Modals.SHARE_GIST_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_input: value }, true);
                 }
                 break;
             }
-            case Modals.REGEN_ACTION: {
-                const persis = this.read.getPersistenceReader();
-                const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
-                const result_record = await persis.readByAssociation(association);
-                const association_input = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#regen_input`);
-                const regen_record = await persis.readByAssociation(association_input);
-                if (result_record && regen_record) {
-                    let result_str = result_record[0]['result'] as string
-                    result_str = result_str.substring(0,Math.min(3000, result_str.length))
-                    let input_str = regen_record[0]['regen_input'] as string
-                    input_str = input_str.substring(0,Math.min(1000, input_str.length))
-                    handler.regenerateCodeFromResult(result_str, input_str);
-                } else {
-                    this.app.getLogger().debug("error: no result/regen command");
+            case Modals.SHARE_GIST_FILENAME_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_filename_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_filename_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GIST_COMMIT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_commit_input`);
+                    await this.persistence.updateByAssociation(association, { share_gist_commit_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_REPO_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_repo_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_repo_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_PATH_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_path_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_path_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_BRANCH_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_branch_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_branch_input: value }, true);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_COMMIT_INPUT_ACTION: {
+                if (value) {
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_github_commit_input`);
+                    await this.persistence.updateByAssociation(association, { share_github_commit_input: value }, true);
+                }
+                break;
+            }
+            case Modals.CONFIGURE_BAR_ACTION: {
+                const contextualBar = await createMainContextualBar(
+                    this.app,
+                    user,
+                    this.read,
+                    this.persistence,
+                    this.modify,
+                    room
+                );
+        
+                if (contextualBar instanceof Error) {
+                    this.app.getLogger().error(contextualBar.message);
+                    break;
+                }
+                
+                if (triggerId) {
+                    await this.modify.getUiController().openSurfaceView(
+                        contextualBar,
+                        {
+                            triggerId,
+                        },
+                        user
+                    );
                 }
                 break;
             }
@@ -229,7 +263,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render regen modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;
@@ -280,7 +314,7 @@ export class ExecuteBlockActionHandler {
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render gen modal: "+err);
+                    
                     this.app.getLogger().error(err);
                 }
                 break;
@@ -322,12 +356,72 @@ export class ExecuteBlockActionHandler {
                                 user
                             );
                         }
+                        const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_input`);
+                        await this.persistence.updateByAssociation(association, { share_input: result_str }, true);
                     } else {
                         this.app.getLogger().debug("error: no share content");
                     }
                 }
                 catch (err) {
-                    console.log("Error in when render share modal: "+err);
+                    
+                    this.app.getLogger().error(err);
+                }
+                break;
+            }
+            case Modals.SHARE_GITHUB_BUTTON_ACTION: {
+                if (!room) {
+                    this.app.getLogger().error("Room is not specified!");
+                    break;
+                }
+                try{
+                    const persis = this.read.getPersistenceReader();
+                    const association = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#result`);
+                    const result_record = await persis.readByAssociation(association);
+                    
+                    if (result_record) {
+                        
+                        let result_str = result_record[0]['result'] as string;
+                        const trimmed = result_str.trim();
+    
+                        // Check if the string starts and ends with triple backticks
+                        if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
+                            // Remove the first and last lines (which contain the backticks)
+                            const lines = trimmed.split('\n');
+                            result_str = lines.slice(1, -1).join('\n').trim();
+                        }
+                        const modal = await shareGistModal(
+                            this.app,
+                            user,
+                            room,
+                            this.read,
+                            this.modify,
+                            this.http,
+                            this.persistence,
+                            result_str,
+                            triggerId
+                        );
+                        if (modal instanceof Error) {
+                            this.app.getLogger().error(modal.message);
+                            break;
+                        }
+                        
+                        if (triggerId) {
+                            await this.modify.getUiController().openSurfaceView(
+                                modal,
+                                {
+                                    triggerId,
+                                },
+                                user
+                            );
+                        }
+                        const association2 = new RocketChatAssociationRecord(RocketChatAssociationModel.MISC, `${user.id}#share_gist_input`);
+                        await this.persistence.updateByAssociation(association2, { share_gist_input: result_str }, true);
+                    } else {
+                        this.app.getLogger().debug("error: no share content");
+                    }
+                }
+                catch (err) {
+                    
                     this.app.getLogger().error(err);
                 }
                 break;

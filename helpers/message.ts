@@ -11,7 +11,7 @@ export async function getDirect(read: IRead, modify: IModify, appUser: IUser, us
     try {
         room = await read.getRoomReader().getDirectByUsernames(usernames);
     } catch (error) {
-        console.log(error);
+        
         return;
     }
 

@@ -11,7 +11,6 @@ import { IAppInfo, RocketChatAssociationModel, RocketChatAssociationRecord } fro
 import { generateCode } from '../helpers/generateCode';
 import { regenerateCodePrompt, generateCodePrompt } from '../constants/CodePrompts';
 import { sendNotification, sendMessage } from "../helpers/message";
-import { regenerationComponent } from "../definition/ui-kit/Modals/regenerationComponent";
 import { shareComponent } from "../definition/ui-kit/Modals/shareComponent";
 
 export class Handler {
@@ -47,9 +46,9 @@ export class Handler {
         try {
             await this.persistence.updateByAssociation(association, { language: query }, true);
             const record = await persis.readByAssociation(association);
-            console.log("Successfully set language: " + record[0]['language']);
+            
         } catch (err) {
-            console.log("Error: "+err);
+            
             return this.app.getLogger().error(err);
         }
     }
@@ -60,9 +59,9 @@ export class Handler {
         try {
             await this.persistence.updateByAssociation(association, { LLM: query }, true);
             const record = await persis.readByAssociation(association);
-            console.log("Successfully set LLM: " + record[0]['LLM']);
+            
         } catch (err) {
-            console.log("Error: "+err);
+            
             return this.app.getLogger().error(err);
         }
     }
@@ -76,12 +75,12 @@ export class Handler {
                 this.language = record[0]['language'] as string;
             }
             else {
-                console.log("Read language Fail!");
+                
                 this.language = 'Python';
             }
         }
         catch (err) {
-            console.log("Error read languange: "+err); 
+            
         }
         return this.language;
     }
@@ -95,12 +94,12 @@ export class Handler {
                 this.LLM = LLMrecord[0]['LLM'] as string;
             }
             else {
-                console.log("Read LLM Fail!");
+                
                 this.LLM = 'mistral-7b';
             }
         }
         catch (err) {
-            console.log("Error read LLM: "+err); 
+            
         }
         return this.LLM;
     }
@@ -112,7 +111,7 @@ export class Handler {
             this.LLM = await this.getLLM();
         }
         catch (err) {
-            console.log("Error in getting language and llm: "+err);
+            
             return this.app.getLogger().error(err);
         }
         await sendNotification(
@@ -120,8 +119,8 @@ export class Handler {
             this.modify,
             this.sender,
             this.room,
-            `You are using language: `+this.language+' with LLM: '+this.LLM+` to refine code. Please wait for the response...
-            (Please set language and LLM properly, otherwise you will not get any response!)`
+            `You are using language: `+this.language+' with LLM: '+this.LLM+` to refine code.
+            Please wait for the response... it may take a long time`
         );
         const prompt = regenerateCodePrompt(dialogue, last_result);
         const result = await generateCode(
@@ -159,7 +158,7 @@ export class Handler {
             this.LLM = await this.getLLM();
         }
         catch (err) {
-            console.log("Error in getting language and llm: "+err);
+            
             return this.app.getLogger().error(err);
         }
         await sendNotification(
@@ -167,8 +166,8 @@ export class Handler {
             this.modify,
             this.sender,
             this.room,
-            `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code. Please wait for the response...
-            (Please set language and LLM properly, otherwise you will not get any response!)`
+            `You are using language: `+this.language+' with LLM: '+this.LLM+` to generate code.
+            Please wait for the response... it may take a long time`
         );
     
         const prompt = generateCodePrompt(query, this.language);
@@ -200,12 +199,6 @@ export class Handler {
         }
     }
     private async sendCodeResultwithBlocks(result: string){
-        const regen_block = await regenerationComponent(this.app,
-            this.sender,
-            this.read,
-            this.persistence,
-            this.modify,
-            this.room);
         const share_block = await shareComponent(this.app,
             this.sender,
             this.read,
@@ -218,14 +211,6 @@ export class Handler {
             this.sender,
             this.room,
             result,
-        );
-        await sendNotification(
-            this.read,
-            this.modify,
-            this.sender,
-            this.room,
-            undefined,
-            regen_block,
         );
         await sendNotification(
             this.read,
