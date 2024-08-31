@@ -29,8 +29,6 @@ import { createOAuth2Client } from "@rocket.chat/apps-engine/definition/oauth2/O
 import { sendNotification, sendMessage, sendDirectMessage } from "./helpers/message";
 import { clearInteractionRoomData, getInteractionRoomData } from "./persistance/roomInteraction";
 import { deleteOathToken } from "./processors/deleteOAthToken";
-import { SendReminder } from "./handlers/SendReminder";
-import { IJobContext, StartupType } from "@rocket.chat/apps-engine/definition/scheduler";
 import { githubWebHooks } from "./endpoints/githubEndpoints";
 import {
     ApiSecurity,
@@ -82,16 +80,6 @@ export class AiProgrammerApp extends App {
                         );
                     }
                 },
-            },
-            {
-                id:ProcessorsEnum.PR_REMINDER,
-                processor:async(jobData,read,modify,http,persis) =>{
-                    await SendReminder(jobData,read,modify,http,persis,this)
-                },
-                startupSetting:{
-                    type:StartupType.RECURRING,
-                    interval:"0 9 * * *"
-                }
             },
         ]);
         configuration.api.provideApi({

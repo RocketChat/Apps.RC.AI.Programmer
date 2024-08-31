@@ -224,6 +224,7 @@ export class ExecuteViewSubmitHandler {
                     let accessToken = await getAccessTokenForUser(this.read, user, this.app.oauth2Config);
                     if (accessToken == undefined) {
                         console.log("access token undefined");
+                        await sendNotification(this.read, this.modify, user, room, "Please make sure your OAuth2 settings are correct and logged into Github using  \`/ai-programmer login \` !");
                         break;
                     }
                     let response = await uploadGist(
